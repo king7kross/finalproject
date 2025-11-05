@@ -6,6 +6,7 @@
     <div *ngIf="f['fullName'].touched && f['fullName'].invalid">
       <div *ngIf="f['fullName'].errors?.['required']">Full Name is required.</div>
       <div *ngIf="f['fullName'].errors?.['maxlength']">Max 100 characters.</div>
+      <div *ngIf="f['fullName'].errors?.['invalidName']">Only alphabets and spaces allowed.</div>
     </div>
   </div>
 
@@ -14,16 +15,16 @@
     <input formControlName="email" required type="email" />
     <div *ngIf="f['email'].touched && f['email'].invalid">
       <div *ngIf="f['email'].errors?.['required']">Email is required.</div>
-      <div *ngIf="f['email'].errors?.['email']">Invalid email.</div>
+      <div *ngIf="f['email'].errors?.['invalidEmail']">Invalid email format</div>
     </div>
   </div>
 
   <div>
     <label>Phone</label>
-    <input formControlName="phoneNumber" maxlength="10" type="number" required />
+    <input formControlName="phoneNumber" maxlength="10" type="tel" required />
     <div *ngIf="f['phoneNumber'].touched && f['phoneNumber'].invalid">
       <div *ngIf="f['phoneNumber'].errors?.['required']">Phone number is required.</div>
-      <div *ngIf="f['phoneNumber'].errors?.['pattern']">Must be 10 digits.</div>
+      <div *ngIf="f['phoneNumber'].errors?.['invalidPhone']">Must be exactly 10 digits.</div>
     </div>
   </div>
 

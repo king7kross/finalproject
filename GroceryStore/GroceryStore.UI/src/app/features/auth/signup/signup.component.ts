@@ -6,7 +6,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { UserStore } from '../../../core/state/user.store';
 import { ToastService } from '../../../core/services/toast.service';
 import { CommonModule } from '@angular/common';
-import { confirmMatch, passwordRule, phoneOptional } from '../../../core/utils/validators';
+import { confirmMatch, passwordRule, nameValidator, emailValidator, phoneValidator } from '../../../core/utils/validators';
 import { SignupRequest } from '../../../shared/models/auth.models';
 
 @Component({
@@ -28,10 +28,10 @@ export class SignupComponent {
   ) {
     // ✅ Initialize form inside constructor
     this.form = this.fb.group({
-      fullName: ['', [Validators.required, Validators.maxLength(100)]],
-      email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]], // now required
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      fullName: ['', [Validators.required, Validators.maxLength(100), nameValidator()]],
+      email: ['', [Validators.required, emailValidator()]],
+      phoneNumber: ['', [Validators.required, phoneValidator()]], // now required
+      password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', [Validators.required]]
     });
   }

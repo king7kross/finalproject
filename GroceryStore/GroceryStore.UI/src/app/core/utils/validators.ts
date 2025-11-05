@@ -23,10 +23,31 @@ export function confirmMatch(matchTo: string): ValidatorFn {
   };
 }
 
-export function phoneOptional(): ValidatorFn {
+
+
+export function nameValidator(): ValidatorFn {
   return (c: AbstractControl): ValidationErrors | null => {
     const v = (c.value ?? '').toString().trim();
-    if (!v) return null;
-    return /^\+?\d{7,15}$/.test(v) ? null : { phone: true };
+    if (!v) return { required: true };
+    // Only alphabets and spaces
+    return /^[a-zA-Z\s]+$/.test(v) ? null : { invalidName: true };
+  };
+}
+
+export function emailValidator(): ValidatorFn {
+  return (c: AbstractControl): ValidationErrors | null => {
+    const v = (c.value ?? '').toString().trim();
+    if (!v) return { required: true };
+    // Basic email format: something@something.com
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? null : { invalidEmail: true };
+  };
+}
+
+export function phoneValidator(): ValidatorFn {
+  return (c: AbstractControl): ValidationErrors | null => {
+    const v = (c.value ?? '').toString().trim();
+    if (!v) return { required: true };
+    // Max 10 digits
+    return /^[0-9]{10}$/.test(v) ? null : { invalidPhone: true };
   };
 }
