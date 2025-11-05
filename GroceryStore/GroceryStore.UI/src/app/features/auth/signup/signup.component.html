@@ -2,7 +2,7 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div>
     <label>Full Name</label>
-    <input formControlName="fullName" />
+    <input formControlName="fullName" maxlength="50" required/>
     <div *ngIf="f['fullName'].touched && f['fullName'].invalid">
       <div *ngIf="f['fullName'].errors?.['required']">Full Name is required.</div>
       <div *ngIf="f['fullName'].errors?.['maxlength']">Max 100 characters.</div>
@@ -11,7 +11,7 @@
 
   <div>
     <label>Email</label>
-    <input formControlName="email" />
+    <input formControlName="email" required type="email" />
     <div *ngIf="f['email'].touched && f['email'].invalid">
       <div *ngIf="f['email'].errors?.['required']">Email is required.</div>
       <div *ngIf="f['email'].errors?.['email']">Invalid email.</div>
@@ -20,7 +20,7 @@
 
   <div>
     <label>Phone</label>
-    <input formControlName="phoneNumber" maxlength="10" />
+    <input formControlName="phoneNumber" maxlength="10" type="number" required />
     <div *ngIf="f['phoneNumber'].touched && f['phoneNumber'].invalid">
       <div *ngIf="f['phoneNumber'].errors?.['required']">Phone number is required.</div>
       <div *ngIf="f['phoneNumber'].errors?.['pattern']">Must be 10 digits.</div>
@@ -29,16 +29,16 @@
 
   <div>
     <label>Password</label>
-    <input type="password" formControlName="password" />
+    <input type="password" formControlName="password" required/>
     <div *ngIf="f['password'].touched && f['password'].invalid">
       <div *ngIf="f['password'].errors?.['required']">Password is required.</div>
-      <div *ngIf="f['password'].errors?.['minlength']">Min 6 characters.</div>
+      <div *ngIf="f['password'].errors?.['minlength']">Min 8 characters.</div>
     </div>
   </div>
 
   <div>
     <label>Confirm Password</label>
-    <input type="password" formControlName="confirmPassword" />
+    <input type="password" formControlName="confirmPassword" required/>
     <div *ngIf="f['confirmPassword'].touched && f['confirmPassword'].invalid">
       <div *ngIf="f['confirmPassword'].errors?.['required']">Confirm is required.</div>
       <div *ngIf="f['confirmPassword'].errors?.['mismatch']">Passwords must match.</div>

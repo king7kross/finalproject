@@ -1,29 +1,29 @@
 <h2>Admin - Products</h2>
 
-<div style="margin-bottom:12px;">
+<div class="add-product-button">
   <a routerLink="/admin/add">+ Add Product</a>
 </div>
 
 <section *ngIf="loading">Loading...</section>
 <section *ngIf="!loading && list?.items?.length === 0">No products.</section>
 
-<table *ngIf="!loading && list?.items?.length" style="width:100%; border-collapse:collapse;">
+<table *ngIf="!loading && list?.items?.length" class="products-table">
   <thead>
-    <tr style="text-align:left; border-bottom:1px solid #eee;">
-      <th style="padding:8px;">Name</th>
-      <th style="padding:8px;">Category</th>
-      <th style="padding:8px;">Price</th>
-      <th style="padding:8px;">Qty</th>
-      <th style="padding:8px;">Action</th>
+    <tr class="header-row">
+      <th>Name</th>
+      <th>Category</th>
+      <th>Price</th>
+      <th>Qty</th>
+      <th>Action</th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let p of list!.items" style="border-bottom:1px solid #f2f2f2;">
-      <td style="padding:8px;">{{ p.name }}</td>
-      <td style="padding:8px;">{{ p.category }}</td>
-      <td style="padding:8px;">{{ p.price | currency:'INR':'symbol' }}</td>
-      <td style="padding:8px;">{{ p.availableQuantity }}</td>
-      <td style="padding:8px;">
+    <tr *ngFor="let p of list!.items" class="data-row">
+      <td>{{ p.name }}</td>
+      <td>{{ p.category }}</td>
+      <td>{{ p.price | currency:'INR':'symbol' }}</td>
+      <td>{{ p.availableQuantity }}</td>
+      <td class="action-cell">
         <a [routerLink]="['/admin/edit', p.id]">Edit</a>
         &nbsp;|&nbsp;
         <a href="" (click)="onDelete(p.id); $event.preventDefault();">Delete</a>

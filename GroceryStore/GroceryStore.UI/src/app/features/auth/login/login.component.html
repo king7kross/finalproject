@@ -2,7 +2,7 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div>
     <label>Email</label>
-    <input formControlName="email" />
+    <input formControlName="email" required type="email" />
     <div *ngIf="form.controls['email'].touched && form.controls['email'].invalid">
       <div *ngIf="form.controls['email'].errors?.['required']">Email is required.</div>
       <div *ngIf="form.controls['email'].errors?.['email']">Invalid email.</div>
@@ -11,7 +11,7 @@
 
   <div>
     <label>Password</label>
-    <input type="password" formControlName="password" />
+    <input type="password" formControlName="password" required="" />
     <div *ngIf="form.controls['password'].touched && form.controls['password'].invalid">
       <div *ngIf="form.controls['password'].errors?.['required']">Password is required.</div>
     </div>
