@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36310.24
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroceryStore.API", "GroceryStore.API\GroceryStore.API.csproj", "{58500A77-FA18-4282-A377-EC98224E3F40}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroceryStore.Application", "GroceryStore.Application\GroceryStore.Application.csproj", "{8AB93FD9-063A-5E3F-C66E-955F161D47E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroceryStore.Domain", "GroceryStore.Domain\GroceryStore.Domain.csproj", "{050A3F36-41C4-9101-09A2-1B70A53FC272}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroceryStore.Infrastructure", "GroceryStore.Infrastructure\GroceryStore.Infrastructure.csproj", "{B4073B6A-2EF4-3A39-80E8-6C837A39B0F0}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "GroceryStore.UI", "GroceryStore.UI\GroceryStore.UI.esproj", "{BA117285-6F61-4501-4066-F22958637D3A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{58500A77-FA18-4282-A377-EC98224E3F40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58500A77-FA18-4282-A377-EC98224E3F40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58500A77-FA18-4282-A377-EC98224E3F40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58500A77-FA18-4282-A377-EC98224E3F40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AB93FD9-063A-5E3F-C66E-955F161D47E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AB93FD9-063A-5E3F-C66E-955F161D47E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AB93FD9-063A-5E3F-C66E-955F161D47E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AB93FD9-063A-5E3F-C66E-955F161D47E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{050A3F36-41C4-9101-09A2-1B70A53FC272}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{050A3F36-41C4-9101-09A2-1B70A53FC272}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{050A3F36-41C4-9101-09A2-1B70A53FC272}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{050A3F36-41C4-9101-09A2-1B70A53FC272}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4073B6A-2EF4-3A39-80E8-6C837A39B0F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4073B6A-2EF4-3A39-80E8-6C837A39B0F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4073B6A-2EF4-3A39-80E8-6C837A39B0F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4073B6A-2EF4-3A39-80E8-6C837A39B0F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA117285-6F61-4501-4066-F22958637D3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA117285-6F61-4501-4066-F22958637D3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA117285-6F61-4501-4066-F22958637D3A}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{BA117285-6F61-4501-4066-F22958637D3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA117285-6F61-4501-4066-F22958637D3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA117285-6F61-4501-4066-F22958637D3A}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9FE54631-C753-4CA0-8ED0-7B7FDC9EE1FB}
+	EndGlobalSection
+EndGlobal
