@@ -9,26 +9,7 @@ import { AsyncPipe, NgIf } from '@angular/common';
   selector: 'gs-header',
   standalone: true,
   imports: [RouterLink, AsyncPipe, NgIf],
-  template: `
-    <header>
-      <a routerLink="/" class="logo">Grocery Store</a>
-
-      <nav *ngIf="(userStore.isLoggedIn$ | async) === true; else anon">
-        <span class="welcome">Hi, {{ userStore.snapshot?.fullName }}</span>
-        <a routerLink="/cart">View Cart</a>
-        <a routerLink="/orders">My Orders</a>
-        <a *ngIf="(userStore.isAdmin$ | async) || userStore.snapshot?.isAdmin" routerLink="/admin">Manage Products</a>
-        <button (click)="onLogout()">Sign-out</button>
-      </nav>
-
-      <ng-template #anon>
-        <nav>
-          <a routerLink="/login">Login</a>
-          <a routerLink="/signup">Signup</a>
-        </nav>
-      </ng-template>
-    </header>
-  `
+  templateUrl: './header.component.html'
 })
 export class HeaderComponent implements OnInit {
   constructor(

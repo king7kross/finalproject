@@ -1,0 +1,5 @@
+<div *ngIf="totalCount > pageSize" style="display:flex; gap:8px; align-items:center; justify-content:center; margin-top:12px;">
+  <button (click)="prev()" [disabled]="page <= 1">Prev</button>
+  <span>Page {{ page }} / {{ totalPages }}</span>
+  <button (click)="next()" [disabled]="page >= totalPages">Next</button>
+</div>

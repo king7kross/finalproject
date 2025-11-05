@@ -25,6 +25,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
         <input type="checkbox" [(ngModel)]="desc"> Desc
       </label>
       <select [(ngModel)]="pageSize" style="padding:6px;">
+        <option [value]="3">3</option>
         <option [value]="6">6</option>
         <option [value]="12">12</option>
         <option [value]="24">24</option>

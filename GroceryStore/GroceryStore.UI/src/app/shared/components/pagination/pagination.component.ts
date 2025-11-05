@@ -6,17 +6,11 @@ import { NgIf } from '@angular/common';
   selector: 'gs-pagination',
   standalone: true,
   imports: [NgIf],
-  template: `
-    <div *ngIf="totalCount > pageSize" style="display:flex; gap:8px; align-items:center; justify-content:center; margin-top:12px;">
-      <button (click)="prev()" [disabled]="page <= 1">Prev</button>
-      <span>Page {{ page }} / {{ totalPages }}</span>
-      <button (click)="next()" [disabled]="page >= totalPages">Next</button>
-    </div>
-  `
+  templateUrl: './pagination.component.html'
 })
 export class PaginationComponent {
   @Input() page = 1;
-  @Input() pageSize = 12;
+  @Input() pageSize = 3;
   @Input() totalCount = 0;
   @Output() pageChange = new EventEmitter<number>();
 

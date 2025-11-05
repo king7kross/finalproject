@@ -12,65 +12,8 @@ import { SignupRequest } from '../../../shared/models/auth.models';
 @Component({
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, CommonModule],
-  // ...
-  template: `
-  <h2 class="signup">SignUp</h2>
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div>
-      <label>Full Name</label>
-      <input formControlName="fullName" />
-      <div *ngIf="f['fullName'].touched && f['fullName'].invalid">
-        <div *ngIf="f['fullName'].errors?.['required']">Full Name is required.</div>
-        <div *ngIf="f['fullName'].errors?.['maxlength']">Max 100 characters.</div>
-      </div>
-    </div>
-
-    <div>
-      <label>Email</label>
-      <input formControlName="email" />
-      <div *ngIf="f['email'].touched && f['email'].invalid">
-        <div *ngIf="f['email'].errors?.['required']">Email is required.</div>
-        <div *ngIf="f['email'].errors?.['email']">Invalid email.</div>
-      </div>
-    </div>
-
-    <div>
-      <label>Phone</label>
-      <input formControlName="phoneNumber" maxlength="10" />
-      <div *ngIf="f['phoneNumber'].touched && f['phoneNumber'].invalid">
-        <div *ngIf="f['phoneNumber'].errors?.['required']">Phone number is required.</div>
-        <div *ngIf="f['phoneNumber'].errors?.['pattern']">Must be 10 digits.</div>
-      </div>
-    </div>
-
-    <div>
-      <label>Password</label>
-      <input type="password" formControlName="password" />
-      <div *ngIf="f['password'].touched && f['password'].invalid">
-        <div *ngIf="f['password'].errors?.['required']">Password is required.</div>
-        <div *ngIf="f['password'].errors?.['minlength']">Min 6 characters.</div>
-      </div>
-    </div>
-
-    <div>
-      <label>Confirm Password</label>
-      <input type="password" formControlName="confirmPassword" />
-      <div *ngIf="f['confirmPassword'].touched && f['confirmPassword'].invalid">
-        <div *ngIf="f['confirmPassword'].errors?.['required']">Confirm is required.</div>
-        <div *ngIf="f['confirmPassword'].errors?.['mismatch']">Passwords must match.</div>
-      </div>
-    </div>
-
-    <button [disabled]="form.invalid || loading">{{ loading ? 'Creating...' : 'Signup' }}</button>
-    <div>Have an account? <a routerLink="/login">Login</a></div>
-  </form>
-`,
- styles: [`
-    .signup {
-      text-align:center;
-    }`
-  ]
-
+  templateUrl: './signup.component.html',
+  styleUrl: './signup.component.css'
 })
 export class SignupComponent {
   loading = false;
