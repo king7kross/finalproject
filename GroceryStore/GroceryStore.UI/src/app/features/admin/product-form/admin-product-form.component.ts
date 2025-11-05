@@ -103,6 +103,14 @@ function nonNegDecimal2(c: AbstractControl): ValidationErrors | null {
       </div>
 
       <div>
+        <label>Specification (optional)</label><br>
+        <input formControlName="specification" />
+        <div *ngIf="f.specification.touched && f.specification.errors" style="color:#c00; font-size:12px;">
+          <div *ngIf="f.specification.errors['maxlength']">Max 100 characters.</div>
+        </div>
+      </div>
+
+      <div>
         <label>Image URL (JPG/PNG)</label><br>
         <input formControlName="imageUrl" placeholder="https://m.media-amazon.com/images/I/41AWXqhnJ8L._SX679_.jpg" />
         <div *ngIf="f.imageUrl.touched && f.imageUrl.errors" style="color:#c00; font-size:12px;">
@@ -144,6 +152,7 @@ export class AdminProductFormComponent implements OnInit {
       availableQuantity: ['0', [integerOnly, nonNegNum]],
       price: ['', [Validators.required, decimal2, nonNegDecimal2]],
       discount: [''], // optional, validated by decimal2/nonNegDecimal2 only if filled
+      specification: ['', [maxLen(100)]],
       imageUrl: ['', [Validators.required, Validators.pattern(/https?:\/\/.*\.(jpg|jpeg|png)$/i)]]
     });
   }
@@ -164,6 +173,7 @@ export class AdminProductFormComponent implements OnInit {
             availableQuantity: String(p.availableQuantity ?? 0),
             price: String(p.price ?? ''),
             discount: p.discount == null ? '' : String(p.discount),
+            specification: p.specification ?? '',
             imageUrl: p.imageUrl ?? ''
           });
           this.preview = (p.imageUrl ?? null) as string | null;
@@ -183,6 +193,7 @@ export class AdminProductFormComponent implements OnInit {
       availableQuantity: parseInt((v['availableQuantity'] ?? '0').toString()),
       price: parseFloat((v['price'] ?? '0').toString()),
       discount: (v['discount'] ?? '').toString().trim() === '' ? null : parseFloat((v['discount'] ?? '0').toString()),
+      specification: (v['specification'] ?? '').toString().trim() === '' ? null : (v['specification'] ?? '').toString(),
       imageUrl: (v['imageUrl'] ?? '').toString()
     };
   }

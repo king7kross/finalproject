@@ -17,7 +17,12 @@ import { AsyncPipe, NgIf } from '@angular/common';
         <span>Hi, {{ userStore.snapshot?.fullName }}</span>
         <a routerLink="/cart">View Cart</a>
         <a routerLink="/orders">My Orders</a>
-        <a *ngIf="(userStore.isAdmin$ | async) === true" routerLink="/admin">Manage Products</a>
+        <!-- changed: show admin link if observable isAdmin$ OR snapshot flags indicate admin role -->
+        <a *ngIf="(userStore.isAdmin$ | async) 
+                   || userStore.snapshot?.isAdmin"
+           routerLink="/admin">
+          Manage Products
+        </a>
         <button (click)="onLogout()" style="border:1px solid #ddd; padding:4px 8px; background:#fff; cursor:pointer;">Sign-out</button>
       </nav>
 
@@ -40,8 +45,14 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     // Try to load current user (if cookie present)
     this.auth.me().subscribe({
-      next: me => this.userStore.setUser(me),
-      error: () => this.userStore.clear()
+      next: me => {
+        console.log('User loaded:', me);
+        this.userStore.setUser(me);
+      },
+      error: err => {
+        console.log('Failed to load user:', err);
+        this.userStore.clear();
+      }
     });
   }
 

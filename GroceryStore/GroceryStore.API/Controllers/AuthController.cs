@@ -59,7 +59,7 @@ namespace GroceryStore.API.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginRequest req)
+        public async Task<ActionResult<UserResponse>> Login([FromBody] LoginRequest req)
         {
             var user = await _userManager.FindByEmailAsync(req.Email);
             if (user == null)
@@ -76,7 +76,14 @@ namespace GroceryStore.API.Controllers
 
             await _signInManager.RefreshSignInAsync(user);
 
-            return Ok(new { message = "Login successful." });
+            return new UserResponse
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email ?? "",
+                PhoneNumber = user.PhoneNumber ?? "",
+                IsAdmin = user.IsAdmin
+            };
         }
 
         [HttpPost("logout")]

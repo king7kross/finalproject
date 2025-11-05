@@ -113,7 +113,11 @@ export class CartComponent implements OnInit {
         alert(`Order placed! Order Number: ${res.orderNumber}`);
         this.load(); // cart should be cleared by server
       },
-      error: _ => { this.placing = false; alert('Failed to place order.'); }
+      error: err => {
+        this.placing = false;
+        console.error('Order placement error:', err);
+        alert('Failed to place order. Please try again.');
+      }
     });
   }
 }

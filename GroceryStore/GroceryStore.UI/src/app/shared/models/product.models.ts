@@ -8,6 +8,7 @@ export interface Product {
   discount?: number | null; // decimal(18,2) optional
   imageUrl?: string | null;
   availableQuantity: number;
+  specification?: string | null;
 }
 
 export interface PagedResult<T> {

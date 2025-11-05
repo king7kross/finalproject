@@ -64,7 +64,10 @@ export class LoginComponent {
         this.toast.success('Logged in.');
         this.router.navigateByUrl('/');
       },
-      error: () => { this.loading = false; }
+      error: (err) => {
+        this.loading = false;
+        this.toast.error(err.error?.message || 'Login failed.');
+      }
     });
   }
 }
