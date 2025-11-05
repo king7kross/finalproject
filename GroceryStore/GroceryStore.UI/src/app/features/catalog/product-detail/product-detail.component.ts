@@ -28,9 +28,9 @@ import { FormsModule } from '@angular/forms';
         <p style="margin-top:0;">{{ product!.description }}</p>
 
         <div style="display:flex; align-items:baseline; gap:8px; margin:12px 0;">
-          <span style="font-size:18px;">{{ product!.price | currency:'INR':'symbol' }}</span>
-          <span *ngIf="product!.discount && product!.discount! > 0" style="font-size:13px; color:#0a7;">
-            -{{ product!.discount | currency:'INR':'symbol' }}
+          <span style="font-size:18px;">{{ (product!.price - (product!.discount || 0)) | currency:'INR':'symbol' }}</span>
+          <span *ngIf="product!.discount && product!.discount! > 0" style="font-size:13px; color:#0a7; text-decoration:line-through;">
+            {{ product!.price | currency:'INR':'symbol' }}
           </span>
         </div>
 

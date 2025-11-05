@@ -20,9 +20,9 @@ import { RouterLink } from '@angular/router';
         <div style="font-size:13px; color:#666; margin-bottom:6px;">{{ product.category }}</div>
 
         <div *ngIf="product" style="display:flex; gap:8px; align-items:baseline;">
-          <span>{{ product!.price | currency:'INR':'symbol' }}</span>
-          <span *ngIf="product!.discount && product!.discount! > 0" style="font-size:12px; color:#0a7;">
-            -{{ product!.discount | currency:'INR':'symbol' }}
+          <span>{{ (product!.price - (product!.discount || 0)) | currency:'INR':'symbol' }}</span>
+          <span *ngIf="product!.discount && product!.discount! > 0" style="font-size:12px; color:#0a7; text-decoration:line-through;">
+            {{ product!.price | currency:'INR':'symbol' }}
           </span>
         </div>
 

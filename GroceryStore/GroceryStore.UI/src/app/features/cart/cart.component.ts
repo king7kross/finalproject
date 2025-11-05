@@ -41,7 +41,7 @@ import { FormsModule } from '@angular/forms';
                 </div>
               </div>
             </td>
-            <td style="padding:8px;">{{ it.unitPrice | currency:'INR':'symbol' }}</td>
+            <td style="padding:8px;">{{ it.price | currency:'INR':'symbol' }}</td>
             <td style="padding:8px;">{{ (it.discount || 0) | currency:'INR':'symbol' }}</td>
             <td style="padding:8px; white-space:nowrap;">
               <select [(ngModel)]="it.quantity" (ngModelChange)="onQtyChange(it)" [disabled]="updatingId === it.id">
@@ -49,7 +49,7 @@ import { FormsModule } from '@angular/forms';
               </select>
             </td>
             <td style="padding:8px;">
-              {{ (it.unitPrice - (it.discount || 0)) * it.quantity | currency:'INR':'symbol' }}
+              {{ (it.price - (it.discount || 0)) * it.quantity | currency:'INR':'symbol' }}
             </td>
             <td style="padding:8px;">
               <button (click)="remove(it)" [disabled]="updatingId === it.id">Remove</button>

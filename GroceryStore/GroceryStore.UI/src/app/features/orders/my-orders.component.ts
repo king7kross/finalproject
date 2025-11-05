@@ -22,7 +22,7 @@ import { DatePipe, CurrencyPipe, NgFor, NgIf } from '@angular/common';
         <ul style="margin:8px 0 0 16px;">
           <li *ngFor="let it of o.items">
             {{ it.productName }} × {{ it.quantity }} —
-            {{ (it.unitPrice - (it.discountAtPurchase || 0)) | currency:'INR':'symbol' }}
+            {{ (it.unitPrice - (it.discountAtPurchase || 0)) * it.quantity | currency:'INR':'symbol' }}
           </li>
         </ul>
         <div style="margin-top:8px; text-align:right;">
