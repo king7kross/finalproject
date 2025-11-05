@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroceryStore.Infrastructure
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "GroceryStore.UI", "GroceryStore.UI\GroceryStore.UI.esproj", "{BA117285-6F61-4501-4066-F22958637D3A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroceryStore.UnitTests", "..\GroceryStore.UnitTests\GroceryStore.UnitTests.csproj", "{10559ADE-02EB-F410-3534-B4043CD0A600}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{BA117285-6F61-4501-4066-F22958637D3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA117285-6F61-4501-4066-F22958637D3A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BA117285-6F61-4501-4066-F22958637D3A}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{10559ADE-02EB-F410-3534-B4043CD0A600}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10559ADE-02EB-F410-3534-B4043CD0A600}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10559ADE-02EB-F410-3534-B4043CD0A600}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10559ADE-02EB-F410-3534-B4043CD0A600}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
