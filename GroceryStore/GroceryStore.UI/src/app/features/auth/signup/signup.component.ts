@@ -7,6 +7,7 @@ import { UserStore } from '../../../core/state/user.store';
 import { ToastService } from '../../../core/services/toast.service';
 import { NgIf } from '@angular/common';
 import { confirmMatch, passwordRule, phoneOptional } from '../../../core/utils/validators';
+import { SignupRequest } from '../../../shared/models/auth.models';
 
 @Component({
   standalone: true,
@@ -35,9 +36,10 @@ import { confirmMatch, passwordRule, phoneOptional } from '../../../core/utils/v
 
     <div>
       <label>Phone (optional)</label><br />
-      <input formControlName="phone" />
-      <div *ngIf="f['phone'].touched && f['phone'].invalid" style="color:#c00; font-size:12px;">
-        <div *ngIf="f['phone'].errors?.['phone']">Use digits (optional +), 7–15 chars.</div>
+      <input formControlName="phoneNumber" />
+      <div *ngIf="f['phoneNumber'].touched && f['phoneNumber'].invalid" style="color:#c00; font-size:12px;">
+        <div *ngIf="f['phoneNumber'].errors?.['required']">Phone number is required.</div>
+        <div *ngIf="f['phoneNumber'].errors?.['pattern']">Must be 10 digits.</div>
       </div>
     </div>
 
@@ -46,9 +48,7 @@ import { confirmMatch, passwordRule, phoneOptional } from '../../../core/utils/v
       <input type="password" formControlName="password" />
       <div *ngIf="f['password'].touched && f['password'].invalid" style="color:#c00; font-size:12px;">
         <div *ngIf="f['password'].errors?.['required']">Password is required.</div>
-        <div *ngIf="f['password'].errors?.['password']">
-          Min 8 chars, include upper, lower, digit, special.
-        </div>
+        <div *ngIf="f['password'].errors?.['minlength']">Min 6 characters.</div>
       </div>
     </div>
 
@@ -82,9 +82,9 @@ export class SignupComponent {
     this.form = this.fb.group({
       fullName: ['', [Validators.required, Validators.maxLength(100)]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [phoneOptional()]],
-      password: ['', [passwordRule()]],
-      confirmPassword: ['', [Validators.required, confirmMatch('password')]]
+      phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]], // now required
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]]
     });
   }
 
@@ -95,13 +95,15 @@ export class SignupComponent {
     this.loading = true;
     const v = this.form.value as any;
 
-    this.auth.signup({
+    const request: SignupRequest = {
       fullName: v.fullName,
       email: v.email,
-      phone: v.phone || undefined,
+      phoneNumber: v.phoneNumber, // matches backend field name
       password: v.password,
       confirmPassword: v.confirmPassword
-    }).subscribe({
+    };
+
+    this.auth.signup(request).subscribe({
       next: me => {
         this.loading = false;
         this.store.setUser(me);          // server logs in on success
