@@ -40,7 +40,7 @@ if (string.IsNullOrWhiteSpace(cs))
 // DbContext + EF console interceptor
 builder.Services.AddDbContext<GroceryDbContext>(options =>
 {
-    options.UseSqlServer(cs);
+    options.UseSqlServer(cs, sql => sql.MigrationsAssembly("GroceryStore.Infrastructure"));
     options.AddInterceptors(new ConsoleCommandInterceptor());
 });
 
@@ -114,8 +114,9 @@ app.MapControllers();
 // Seed DB (simple, no migrations): creates DB if missing and seeds admin/products
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
-    await SeedData.InitializeAsync(services); // EnsureCreatedAsync inside SeedData
+    var db = scope.ServiceProvider.GetRequiredService<GroceryDbContext>();
+    await db.Database.MigrateAsync();          // ✅ apply migrations
+    await SeedData.InitializeAsync(scope.ServiceProvider); // seed WITHOUT EnsureCreated inside
 }
 
 app.Run();
