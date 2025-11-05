@@ -10,24 +10,19 @@ import { AsyncPipe, NgIf } from '@angular/common';
   standalone: true,
   imports: [RouterLink, AsyncPipe, NgIf],
   template: `
-    <header style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #eee;">
-      <a routerLink="/" style="text-decoration:none; font-weight:600;">Grocery Store</a>
+    <header>
+      <a routerLink="/" class="logo">Grocery Store</a>
 
-      <nav *ngIf="(userStore.isLoggedIn$ | async) === true; else anon" style="display:flex; gap:12px; align-items:center;">
-        <span>Hi, {{ userStore.snapshot?.fullName }}</span>
+      <nav *ngIf="(userStore.isLoggedIn$ | async) === true; else anon">
+        <span class="welcome">Hi, {{ userStore.snapshot?.fullName }}</span>
         <a routerLink="/cart">View Cart</a>
         <a routerLink="/orders">My Orders</a>
-        <!-- changed: show admin link if observable isAdmin$ OR snapshot flags indicate admin role -->
-        <a *ngIf="(userStore.isAdmin$ | async) 
-                   || userStore.snapshot?.isAdmin"
-           routerLink="/admin">
-          Manage Products
-        </a>
-        <button (click)="onLogout()" style="border:1px solid #ddd; padding:4px 8px; background:#fff; cursor:pointer;">Sign-out</button>
+        <a *ngIf="(userStore.isAdmin$ | async) || userStore.snapshot?.isAdmin" routerLink="/admin">Manage Products</a>
+        <button (click)="onLogout()">Sign-out</button>
       </nav>
 
       <ng-template #anon>
-        <nav style="display:flex; gap:12px;">
+        <nav>
           <a routerLink="/login">Login</a>
           <a routerLink="/signup">Signup</a>
         </nav>

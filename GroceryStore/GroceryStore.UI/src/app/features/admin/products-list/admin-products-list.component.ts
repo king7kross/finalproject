@@ -32,7 +32,7 @@ import { RouterLink } from '@angular/router';
         <tr *ngFor="let p of list!.items" style="border-bottom:1px solid #f2f2f2;">
           <td style="padding:8px;">{{ p.name }}</td>
           <td style="padding:8px;">{{ p.category }}</td>
-          <td style="padding:8px;">{{ p.price | currency:'USD':'symbol' }}</td>
+          <td style="padding:8px;">{{ p.price | currency:'INR':'symbol' }}</td>
           <td style="padding:8px;">{{ p.availableQuantity }}</td>
           <td style="padding:8px;">
             <a [routerLink]="['/admin/edit', p.id]">Edit</a>

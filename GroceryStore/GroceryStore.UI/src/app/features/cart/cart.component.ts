@@ -41,15 +41,15 @@ import { FormsModule } from '@angular/forms';
                 </div>
               </div>
             </td>
-            <td style="padding:8px;">{{ it.unitPrice | currency:'USD':'symbol' }}</td>
-            <td style="padding:8px;">{{ (it.discount || 0) | currency:'USD':'symbol' }}</td>
+            <td style="padding:8px;">{{ it.unitPrice | currency:'INR':'symbol' }}</td>
+            <td style="padding:8px;">{{ (it.discount || 0) | currency:'INR':'symbol' }}</td>
             <td style="padding:8px; white-space:nowrap;">
               <select [(ngModel)]="it.quantity" (ngModelChange)="onQtyChange(it)" [disabled]="updatingId === it.id">
                 <option *ngFor="let n of qtyOptions(it)" [value]="n">{{ n }}</option>
               </select>
             </td>
             <td style="padding:8px;">
-              {{ (it.unitPrice - (it.discount || 0)) * it.quantity | currency:'USD':'symbol' }}
+              {{ (it.unitPrice - (it.discount || 0)) * it.quantity | currency:'INR':'symbol' }}
             </td>
             <td style="padding:8px;">
               <button (click)="remove(it)" [disabled]="updatingId === it.id">Remove</button>

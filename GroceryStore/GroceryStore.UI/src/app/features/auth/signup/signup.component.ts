@@ -5,66 +5,71 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserStore } from '../../../core/state/user.store';
 import { ToastService } from '../../../core/services/toast.service';
-import { NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { confirmMatch, passwordRule, phoneOptional } from '../../../core/utils/validators';
 import { SignupRequest } from '../../../shared/models/auth.models';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, NgIf],
+  imports: [ReactiveFormsModule, RouterLink, CommonModule],
   // ...
   template: `
-  <h2>Signup</h2>
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" style="display:grid; gap:12px; max-width:420px;">
+  <h2 class="signup">SignUp</h2>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div>
-      <label>Full Name</label><br />
+      <label>Full Name</label>
       <input formControlName="fullName" />
-      <div *ngIf="f['fullName'].touched && f['fullName'].invalid" style="color:#c00; font-size:12px;">
+      <div *ngIf="f['fullName'].touched && f['fullName'].invalid">
         <div *ngIf="f['fullName'].errors?.['required']">Full Name is required.</div>
         <div *ngIf="f['fullName'].errors?.['maxlength']">Max 100 characters.</div>
       </div>
     </div>
 
     <div>
-      <label>Email</label><br />
+      <label>Email</label>
       <input formControlName="email" />
-      <div *ngIf="f['email'].touched && f['email'].invalid" style="color:#c00; font-size:12px;">
+      <div *ngIf="f['email'].touched && f['email'].invalid">
         <div *ngIf="f['email'].errors?.['required']">Email is required.</div>
         <div *ngIf="f['email'].errors?.['email']">Invalid email.</div>
       </div>
     </div>
 
     <div>
-      <label>Phone (optional)</label><br />
-      <input formControlName="phoneNumber" />
-      <div *ngIf="f['phoneNumber'].touched && f['phoneNumber'].invalid" style="color:#c00; font-size:12px;">
+      <label>Phone</label>
+      <input formControlName="phoneNumber" maxlength="10" />
+      <div *ngIf="f['phoneNumber'].touched && f['phoneNumber'].invalid">
         <div *ngIf="f['phoneNumber'].errors?.['required']">Phone number is required.</div>
         <div *ngIf="f['phoneNumber'].errors?.['pattern']">Must be 10 digits.</div>
       </div>
     </div>
 
     <div>
-      <label>Password</label><br />
+      <label>Password</label>
       <input type="password" formControlName="password" />
-      <div *ngIf="f['password'].touched && f['password'].invalid" style="color:#c00; font-size:12px;">
+      <div *ngIf="f['password'].touched && f['password'].invalid">
         <div *ngIf="f['password'].errors?.['required']">Password is required.</div>
         <div *ngIf="f['password'].errors?.['minlength']">Min 6 characters.</div>
       </div>
     </div>
 
     <div>
-      <label>Confirm Password</label><br />
+      <label>Confirm Password</label>
       <input type="password" formControlName="confirmPassword" />
-      <div *ngIf="f['confirmPassword'].touched && f['confirmPassword'].invalid" style="color:#c00; font-size:12px;">
+      <div *ngIf="f['confirmPassword'].touched && f['confirmPassword'].invalid">
         <div *ngIf="f['confirmPassword'].errors?.['required']">Confirm is required.</div>
         <div *ngIf="f['confirmPassword'].errors?.['mismatch']">Passwords must match.</div>
       </div>
     </div>
 
     <button [disabled]="form.invalid || loading">{{ loading ? 'Creating...' : 'Signup' }}</button>
-    <div style="font-size:12px;">Have an account? <a routerLink="/login">Login</a></div>
+    <div>Have an account? <a routerLink="/login">Login</a></div>
   </form>
-`
+`,
+ styles: [`
+    .signup {
+      text-align:center;
+    }`
+  ]
 
 })
 export class SignupComponent {

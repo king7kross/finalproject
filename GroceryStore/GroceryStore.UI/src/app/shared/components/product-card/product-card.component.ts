@@ -10,19 +10,19 @@ import { RouterLink } from '@angular/router';
   imports: [CurrencyPipe, RouterLink, NgIf],
   template: `
     <article style="border:1px solid #eee; border-radius:8px; padding:12px;">
-      <a [routerLink]="['/product', product?.id]" style="text-decoration:none; color:inherit;">
+      <a [routerLink]="['/product', product.id]" style="text-decoration:none; color:inherit;">
         <div style="height:140px; display:flex; align-items:center; justify-content:center; background:#fafafa; border-radius:6px; margin-bottom:8px;">
-          <img *ngIf="product?.imageUrl" [src]="product!.imageUrl!" alt="{{product?.name}}" style="max-height:120px; max-width:100%;">
+          <img *ngIf="product.imageUrl" [src]="product!.imageUrl!" alt="{{product.name}}" style="max-height:120px; max-width:100%;">
           <span *ngIf="!product?.imageUrl" style="color:#888;">No Image</span>
         </div>
 
-        <h3 style="margin:0 0 6px 0; font-size:16px;">{{ product?.name }}</h3>
-        <div style="font-size:13px; color:#666; margin-bottom:6px;">{{ product?.category }}</div>
+        <h3 style="margin:0 0 6px 0; font-size:16px;">{{ product.name }}</h3>
+        <div style="font-size:13px; color:#666; margin-bottom:6px;">{{ product.category }}</div>
 
         <div *ngIf="product" style="display:flex; gap:8px; align-items:baseline;">
-          <span>{{ product!.price | currency:'USD':'symbol' }}</span>
+          <span>{{ product!.price | currency:'INR':'symbol' }}</span>
           <span *ngIf="product!.discount && product!.discount! > 0" style="font-size:12px; color:#0a7;">
-            -{{ product!.discount | currency:'USD':'symbol' }}
+            -{{ product!.discount | currency:'INR':'symbol' }}
           </span>
         </div>
 

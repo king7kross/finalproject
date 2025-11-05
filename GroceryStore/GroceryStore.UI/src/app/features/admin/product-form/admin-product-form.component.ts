@@ -45,7 +45,7 @@ function nonNegDecimal2(c: AbstractControl): ValidationErrors | null {
     <h2>{{ isEdit ? 'Edit Product' : 'Add Product' }}</h2>
     <a routerLink="/admin">← Back</a>
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" style="margin-top:12px; display:grid; gap:12px; max-width:560px;">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div>
         <label>Name</label><br>
         <input formControlName="name" />

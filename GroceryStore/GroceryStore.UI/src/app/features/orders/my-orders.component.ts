@@ -21,12 +21,12 @@ import { DatePipe, CurrencyPipe, NgFor, NgIf } from '@angular/common';
         </div>
         <ul style="margin:8px 0 0 16px;">
           <li *ngFor="let it of o.items">
-            {{ it.productName }} × {{ it.quantity }} — 
-            {{ (it.unitPrice - (it.discountAtPurchase || 0)) | currency:'USD':'symbol' }}
+            {{ it.productName }} × {{ it.quantity }} —
+            {{ (it.unitPrice - (it.discountAtPurchase || 0)) | currency:'INR':'symbol' }}
           </li>
         </ul>
         <div style="margin-top:8px; text-align:right;">
-          <strong>Total: {{ o.total | currency:'USD':'symbol' }}</strong>
+          <strong>Total: {{ o.total | currency:'INR':'symbol' }}</strong>
         </div>
       </article>
     </section>

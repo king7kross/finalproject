@@ -11,29 +11,35 @@ import { NgIf } from '@angular/common';
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, NgIf],
   template: `
-    <h2>Login</h2>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" style="display:grid; gap:12px; max-width:360px;">
+    <h2 class="login">Login</h2>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div>
-        <label>Email</label><br />
+        <label>Email</label>
         <input formControlName="email" />
-        <div *ngIf="form.controls['email'].touched && form.controls['email'].invalid" style="color:#c00; font-size:12px;">
+        <div *ngIf="form.controls['email'].touched && form.controls['email'].invalid">
           <div *ngIf="form.controls['email'].errors?.['required']">Email is required.</div>
           <div *ngIf="form.controls['email'].errors?.['email']">Invalid email.</div>
         </div>
       </div>
 
       <div>
-        <label>Password</label><br />
+        <label>Password</label>
         <input type="password" formControlName="password" />
-        <div *ngIf="form.controls['password'].touched && form.controls['password'].invalid" style="color:#c00; font-size:12px;">
+        <div *ngIf="form.controls['password'].touched && form.controls['password'].invalid">
           <div *ngIf="form.controls['password'].errors?.['required']">Password is required.</div>
         </div>
       </div>
 
       <button [disabled]="form.invalid || loading">{{ loading ? 'Signing in...' : 'Login' }}</button>
-      <div style="font-size:12px;">No account? <a routerLink="/signup">Signup</a></div>
+      <div>No account? <a routerLink="/signup">Signup</a></div>
     </form>
-  `
+  `,
+  styles: [`
+    .login {
+      text-align:center;
+    }`
+  ]
+
 })
 export class LoginComponent {
   loading = false;
