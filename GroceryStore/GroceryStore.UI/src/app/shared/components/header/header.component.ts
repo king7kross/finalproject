@@ -17,6 +17,7 @@ import { AsyncPipe, NgIf } from '@angular/common';
         <span>Hi, {{ userStore.snapshot?.fullName }}</span>
         <a routerLink="/cart">View Cart</a>
         <a routerLink="/orders">My Orders</a>
+        <a *ngIf="(userStore.isAdmin$ | async) === true" routerLink="/admin">Manage Products</a>
         <button (click)="onLogout()" style="border:1px solid #ddd; padding:4px 8px; background:#fff; cursor:pointer;">Sign-out</button>
       </nav>
 

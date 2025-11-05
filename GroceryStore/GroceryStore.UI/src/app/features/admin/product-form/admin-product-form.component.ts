@@ -103,9 +103,12 @@ function nonNegDecimal2(c: AbstractControl): ValidationErrors | null {
       </div>
 
       <div>
-        <label>Image (JPG/PNG)</label><br>
-        <input type="file" (change)="onFile($event)" accept=".jpg,.jpeg,.png" />
-        <div *ngIf="imageError" style="color:#c00; font-size:12px;">{{ imageError }}</div>
+        <label>Image URL (JPG/PNG)</label><br>
+        <input formControlName="imageUrl" placeholder="https://m.media-amazon.com/images/I/41AWXqhnJ8L._SX679_.jpg" />
+        <div *ngIf="f.imageUrl.touched && f.imageUrl.errors" style="color:#c00; font-size:12px;">
+          <div *ngIf="f.imageUrl.errors['required']">Image URL is required.</div>
+          <div *ngIf="f.imageUrl.errors['pattern']">Must be a valid JPG or PNG URL.</div>
+        </div>
         <div *ngIf="preview" style="margin-top:6px;">
           <img [src]="preview" alt="" style="max-width:160px; border:1px solid #eee;">
         </div>
@@ -122,8 +125,6 @@ export class AdminProductFormComponent implements OnInit {
   submitting = false;
   currentId: number | null = null;
 
-  imageFile: File | null = null;
-  imageError = '';
   preview: string | null = null;
 
   form!: FormGroup;
@@ -142,7 +143,8 @@ export class AdminProductFormComponent implements OnInit {
       category: ['', [Validators.required, maxLen(100)]],
       availableQuantity: ['0', [integerOnly, nonNegNum]],
       price: ['', [Validators.required, decimal2, nonNegDecimal2]],
-      discount: [''] // optional, validated by decimal2/nonNegDecimal2 only if filled
+      discount: [''], // optional, validated by decimal2/nonNegDecimal2 only if filled
+      imageUrl: ['', [Validators.required, Validators.pattern(/https?:\/\/.*\.(jpg|jpeg|png)$/i)]]
     });
   }
 
@@ -161,7 +163,8 @@ export class AdminProductFormComponent implements OnInit {
             category: p.category ?? '',
             availableQuantity: String(p.availableQuantity ?? 0),
             price: String(p.price ?? ''),
-            discount: p.discount == null ? '' : String(p.discount)
+            discount: p.discount == null ? '' : String(p.discount),
+            imageUrl: p.imageUrl ?? ''
           });
           this.preview = (p.imageUrl ?? null) as string | null;
         },
@@ -170,59 +173,32 @@ export class AdminProductFormComponent implements OnInit {
     }
   }
 
-  onFile(e: Event) {
-    this.imageError = '';
-    this.imageFile = null;
-    this.preview = null;
-
-    const input = e.target as HTMLInputElement;
-    const file = input.files && input.files[0];
-    if (!file) return;
-
-    const name = file.name.toLowerCase();
-    if (!(name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.png'))) {
-      this.imageError = 'Only JPG or PNG allowed.';
-      return;
-    }
-
-    this.imageFile = file;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.preview = (reader.result as string) || null; // ✅ cast result to string
-    };
-    reader.readAsDataURL(file);
-  }
-
-  buildFormData(): FormData {
-    const fd = new FormData();
+  buildProductData(): any {
     const v = this.form.value as Record<string, string>;
 
-    fd.append('name', (v['name'] ?? '').toString());
-    fd.append('description', (v['description'] ?? '').toString());
-    fd.append('category', (v['category'] ?? '').toString());
-    fd.append('availableQuantity', (v['availableQuantity'] ?? '0').toString());
-    fd.append('price', (v['price'] ?? '0').toString());
-
-    const discount = (v['discount'] ?? '').toString().trim();
-    if (discount !== '') fd.append('discount', discount);
-
-    if (this.imageFile) fd.append('image', this.imageFile);
-    return fd;
+    return {
+      name: (v['name'] ?? '').toString(),
+      description: (v['description'] ?? '').toString(),
+      category: (v['category'] ?? '').toString(),
+      availableQuantity: parseInt((v['availableQuantity'] ?? '0').toString()),
+      price: parseFloat((v['price'] ?? '0').toString()),
+      discount: (v['discount'] ?? '').toString().trim() === '' ? null : parseFloat((v['discount'] ?? '0').toString()),
+      imageUrl: (v['imageUrl'] ?? '').toString()
+    };
   }
 
   onSubmit() {
     if (this.form.invalid) return;
     this.submitting = true;
-    const fd = this.buildFormData();
+    const productData = this.buildProductData();
 
     if (this.isEdit && this.currentId) {
-      this.productsSvc.updateProduct(this.currentId, fd).subscribe({
+      this.productsSvc.updateProduct(this.currentId, productData).subscribe({
         next: () => { this.submitting = false; alert('Saved.'); this.router.navigateByUrl('/admin'); },
         error: _ => { this.submitting = false; alert('Save failed.'); }
       });
     } else {
-      this.productsSvc.createProduct(fd).subscribe({
+      this.productsSvc.createProduct(productData).subscribe({
         next: () => { this.submitting = false; alert('Created.'); this.router.navigateByUrl('/admin'); },
         error: _ => { this.submitting = false; alert('Create failed.'); }
       });

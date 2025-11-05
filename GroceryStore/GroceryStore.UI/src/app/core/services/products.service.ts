@@ -37,13 +37,13 @@ export class ProductsService {
   }
 
   // Admin endpoints
-  createProduct(formData: FormData) {
-    // expects fields matching server validation, image as file (jpg/png)
-    return this.http.post(`${this.base}`, formData);
+  createProduct(productData: any) {
+    // expects JSON object matching ProductCreateRequest
+    return this.http.post(`${this.base}`, productData);
   }
 
-  updateProduct(id: number, formData: FormData) {
-    return this.http.put(`${this.base}/${id}`, formData);
+  updateProduct(id: number, productData: any) {
+    return this.http.put(`${this.base}/${id}`, productData);
   }
 
   deleteProduct(id: number) {
