@@ -87,19 +87,30 @@ namespace GroceryStore.API.Controllers
 
             var orders = await _orders.GetOrdersForUserAsync(userId);
 
-            // map entities to a lightweight response model
-            var resp = orders.Select(o => new MyOrderResponse
+            // map entities to a lightweight response model including total
+            var resp = orders.Select(o =>
             {
-                OrderNumber = o.OrderNumber,
-                CreatedAt = o.CreatedAt,
-                Items = o.Items.Select(oi => new MyOrderItemResponse
+                var items = o.Items.Select(oi => new MyOrderItemResponse
                 {
                     ProductId = oi.ProductId,
                     ProductName = oi.Product?.Name ?? string.Empty,
                     Quantity = oi.Quantity,
                     UnitPrice = oi.UnitPrice,
                     DiscountAtPurchase = oi.DiscountAtPurchase
-                }).ToList()
+                }).ToList();
+
+                var total = items.Sum(oi =>
+                    (oi.UnitPrice - (oi.DiscountAtPurchase ?? 0m)) * oi.Quantity
+                );
+
+                return new MyOrderResponse
+                {
+                    Id = o.Id, // assuming your Order entity has Id
+                    OrderNumber = o.OrderNumber,
+                    CreatedAt = o.CreatedAt,
+                    Items = items,
+                    Total = total
+                };
             });
 
             return Ok(resp);
