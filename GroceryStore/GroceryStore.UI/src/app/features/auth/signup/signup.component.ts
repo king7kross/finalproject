@@ -1,12 +1,10 @@
-// src/app/features/auth/signup/signup.component.ts
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { UserStore } from '../../../core/state/user.store';
 import { ToastService } from '../../../core/services/toast.service';
 import { CommonModule } from '@angular/common';
-import { confirmMatch, passwordRule, nameValidator, emailValidator, phoneValidator } from '../../../core/utils/validators';
+import { confirmMatch, nameValidator, emailValidator, phoneValidator } from '../../../core/utils/validators';
 import { SignupRequest } from '../../../shared/models/auth.models';
 
 @Component({
@@ -22,17 +20,16 @@ export class SignupComponent {
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
-    private store: UserStore,
     private router: Router,
     private toast: ToastService
   ) {
-    // ✅ Initialize form inside constructor
     this.form = this.fb.group({
       fullName: ['', [Validators.required, Validators.maxLength(100), nameValidator()]],
       email: ['', [Validators.required, emailValidator()]],
-      phoneNumber: ['', [Validators.required, phoneValidator()]], // now required
+      phoneNumber: ['', [Validators.required, phoneValidator()]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', [Validators.required]]
+      // ✅ Apply confirmMatch to *this control*, referencing the "password" control
+      confirmPassword: ['', [Validators.required, confirmMatch('password')]]
     });
   }
 
@@ -41,24 +38,27 @@ export class SignupComponent {
   onSubmit() {
     if (this.form.invalid) return;
     this.loading = true;
-    const v = this.form.value as any;
 
+    const v = this.form.value as any;
     const request: SignupRequest = {
       fullName: v.fullName,
       email: v.email,
-      phoneNumber: v.phoneNumber, // matches backend field name
+      phoneNumber: v.phoneNumber,
       password: v.password,
       confirmPassword: v.confirmPassword
     };
 
     this.auth.signup(request).subscribe({
-      next: me => {
+      next: res => {
         this.loading = false;
-        this.store.setUser(me);          // server logs in on success
-        this.toast.success('Account created.');
-        this.router.navigateByUrl('/');
+        // ❌ No setUser here; user is NOT logged in after signup
+        this.toast.success(res?.message || 'Account created. Please login.');
+        this.router.navigateByUrl('/login');
       },
-      error: () => { this.loading = false; /* error interceptor shows toast */ }
+      error: () => {
+        this.loading = false;
+        // error interceptor will show a message if configured
+      }
     });
   }
 }

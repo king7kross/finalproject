@@ -1,9 +1,8 @@
-﻿using GroceryStore.Application.Interfaces;
+﻿using System.Security.Claims;
+using GroceryStore.Application.Interfaces;
 using GroceryStore.Application.Models;
-using GroceryStore.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace GroceryStore.API.Controllers
 {
@@ -16,9 +15,11 @@ namespace GroceryStore.API.Controllers
         private readonly IProductRepository _products;
         private readonly IOrderRepository _orders;
 
-        public OrdersController(ICartRepository carts, IProductRepository products, IOrderRepository orders)
+        public OrdersController(
+            ICartRepository carts,
+            IProductRepository products,
+            IOrderRepository orders)
         {
-            // DI: use repositories to access data
             _carts = carts;
             _products = products;
             _orders = orders;
@@ -58,22 +59,20 @@ namespace GroceryStore.API.Controllers
                  quantity: i.Quantity,
                  unitPrice: i.Product!.Price,
                  discount: i.Product!.Discount))
-                 .ToList();
+                .ToList();
 
             // simple unique order number for tracking
             var orderNumber = GenerateOrderNumber();
 
-            // create order (repository will also reduce stock)
-            var order = await _orders.CreateOrderAsync(userId, orderNumber, toCreate);
+            // create order (repository should also reduce stock)
+            await _orders.CreateOrderAsync(userId, orderNumber, toCreate);
 
             // empty the cart after creating the order
             await _carts.ClearAsync(userId);
 
-            // save both changes; both repos share the same DbContext scope
-            var savedOrder = await _orders.SaveChangesAsync();
-            var savedCart = await _carts.SaveChangesAsync();
-
-            if (!savedOrder || !savedCart)
+            // 🔧 Single save for the shared DbContext (Unit of Work)
+            var saved = await _orders.SaveChangesAsync();
+            if (!saved)
                 return StatusCode(500, new { message = "Could not place order." });
 
             return Ok(new PlaceOrderResponse { OrderNumber = orderNumber });
@@ -96,7 +95,7 @@ namespace GroceryStore.API.Controllers
                 Items = o.Items.Select(oi => new MyOrderItemResponse
                 {
                     ProductId = oi.ProductId,
-                    ProductName = oi.Product?.Name ?? "",
+                    ProductName = oi.Product?.Name ?? string.Empty,
                     Quantity = oi.Quantity,
                     UnitPrice = oi.UnitPrice,
                     DiscountAtPurchase = oi.DiscountAtPurchase

@@ -1,4 +1,3 @@
-// src/app/core/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
@@ -11,9 +10,9 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  signup(payload: SignupRequest): Observable<MeResponse> {
-    // Server logs user in on success (cookie)
-    return this.http.post<MeResponse>(`${this.base}/signup`, payload);
+  // ✅ Signup no longer returns a logged-in user; just a message
+  signup(payload: SignupRequest): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.base}/signup`, payload);
   }
 
   login(payload: LoginRequest): Observable<MeResponse> {
