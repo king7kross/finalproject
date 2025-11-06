@@ -15,7 +15,7 @@ namespace GroceryStore.Application.Validators
             RuleFor(x => x.Discount).NotNull().When(x => x.Discount.HasValue == true); // optional
             RuleFor(x => x.Specification).MaximumLength(100).When(x => !string.IsNullOrEmpty(x.Specification));
 
-            // Simple jpg/png check (server-side). UI will also validate later.
+            // Simple jpg/png check
             RuleFor(x => x.ImageUrl)
                 .NotEmpty()
                 .Must(url => url.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)

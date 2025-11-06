@@ -13,18 +13,17 @@ namespace GroceryStore.Infrastructure.Persistence
         public DbSet<CartItem> CartItems => Set<CartItem>();
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
-        // DbSet<ProductReview> Reviews => Set<ProductReview>(); // (bonus later)
-
+        
         protected override void OnModelCreating(ModelBuilder b)
         {
             base.OnModelCreating(b);
 
-            // Users: unique email (spec requires unique email) :contentReference[oaicite:16]{index=16}
+            // Users: unique email 
             b.Entity<ApplicationUser>()
              .HasIndex(u => u.Email)
              .IsUnique();
 
-            // Product field constraints already via DataAnnotations; add price precision:
+            // Product field constraints 
             b.Entity<Product>()
              .Property(p => p.Price)
              .HasColumnType("decimal(18,2)");
@@ -56,7 +55,7 @@ namespace GroceryStore.Infrastructure.Persistence
              .HasForeignKey(i => i.OrderId)
              .OnDelete(DeleteBehavior.Cascade);
 
-            // Unique order number for user display :contentReference[oaicite:17]{index=17}
+            // Unique order number for user display 
             b.Entity<Order>()
              .HasIndex(o => o.OrderNumber)
              .IsUnique();

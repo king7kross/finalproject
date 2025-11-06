@@ -28,10 +28,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GroceryStore\GroceryStore.Application\GroceryStore.Application.csproj" />
-    <ProjectReference Include="..\GroceryStore\GroceryStore.Domain\GroceryStore.Domain.csproj" />
-    <ProjectReference Include="..\GroceryStore\GroceryStore.Infrastructure\GroceryStore.Infrastructure.csproj" />
-    <ProjectReference Include="..\GroceryStore\GroceryStore.API\GroceryStore.API.csproj" />
+    <ProjectReference Include="..\GroceryStore.Application\GroceryStore.Application.csproj" />
+    <ProjectReference Include="..\GroceryStore.Domain\GroceryStore.Domain.csproj" />
+    <ProjectReference Include="..\GroceryStore.Infrastructure\GroceryStore.Infrastructure.csproj" />
+    <ProjectReference Include="..\GroceryStore.UI\GroceryStore.UI.esproj" />
   </ItemGroup>
 
 </Project>

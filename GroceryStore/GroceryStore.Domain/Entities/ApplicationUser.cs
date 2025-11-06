@@ -9,6 +9,6 @@ namespace GroceryStore.Domain.Entities
 
         [Required]
         [MaxLength(50)]
-        public string FullName { get; set; } = string.Empty; // match your NOT NULL column
+        public string FullName { get; set; } = string.Empty; 
     }
 }

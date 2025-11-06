@@ -24,14 +24,16 @@ namespace GroceryStore.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Signup([FromBody] SignupRequest req)
         {
-            // basic inline checks now; full FluentValidation in Step 5
+            // Check if passwords match before proceeding
             if (req.Password != req.ConfirmPassword)
                 return BadRequest(new { message = "Passwords do not match." });
 
+            // Verify if email is already used
             var existing = await _userManager.FindByEmailAsync(req.Email);
             if (existing != null)
                 return BadRequest(new { message = "Email already registered." });
 
+            // Create a new user instance
             var user = new ApplicationUser
             {
                 UserName = req.Email,
@@ -40,18 +42,19 @@ namespace GroceryStore.API.Controllers
                 IsAdmin = false,
                 FullName = req.FullName
             };
-            // Store FullName in a claim for simplicity (or extend ApplicationUser with a FullName column if you prefer)
+
+            // Save user details to the database
             var result = await _userManager.CreateAsync(user, req.Password);
             if (!result.Succeeded)
                 return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
 
-            // add FullName + is_admin claims for later policy checks
+            // Add claims for authorization purposes
             await _userManager.AddClaimsAsync(user, new[]
             {
                 new Claim("is_admin", user.IsAdmin ? "true" : "false")
             });
 
-            // Sign in (persistent=false; keep simple)
+            // Automatically sign in the new user
             await _signInManager.SignInAsync(user, isPersistent: false);
 
             return Ok(new { message = "Signup successful." });
@@ -61,21 +64,25 @@ namespace GroceryStore.API.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<UserResponse>> Login([FromBody] LoginRequest req)
         {
+            // Find user by email
             var user = await _userManager.FindByEmailAsync(req.Email);
             if (user == null)
                 return Unauthorized(new { message = "Invalid credentials." });
 
+            // Validate the password
             var result = await _signInManager.PasswordSignInAsync(user, req.Password, isPersistent: false, lockoutOnFailure: false);
             if (!result.Succeeded)
                 return Unauthorized(new { message = "Invalid credentials." });
 
-            // ensure claims include is_admin and (optional) full_name
+            // Ensure the user has admin claim if needed
             var claims = await _userManager.GetClaimsAsync(user);
             if (!claims.Any(c => c.Type == "is_admin"))
                 await _userManager.AddClaimAsync(user, new Claim("is_admin", user.IsAdmin ? "true" : "false"));
 
+            // Refresh session
             await _signInManager.RefreshSignInAsync(user);
 
+            // Return basic user info
             return new UserResponse
             {
                 Id = user.Id,
@@ -90,6 +97,7 @@ namespace GroceryStore.API.Controllers
         [Authorize]
         public async Task<IActionResult> Logout()
         {
+            // Sign out the current user
             await _signInManager.SignOutAsync();
             return Ok(new { message = "Logged out." });
         }
@@ -98,16 +106,19 @@ namespace GroceryStore.API.Controllers
         [Authorize]
         public async Task<ActionResult<UserResponse>> Me()
         {
+            // Retrieve the logged-in user's details
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
+            // Get extra claims if needed
             var claims = await _userManager.GetClaimsAsync(user);
             var fullName = claims.FirstOrDefault(c => c.Type == "full_name")?.Value ?? "";
 
+            // Return user information
             return new UserResponse
             {
                 Id = user.Id,
-                FullName = user.FullName, 
+                FullName = user.FullName,
                 Email = user.Email ?? "",
                 PhoneNumber = user.PhoneNumber ?? "",
                 IsAdmin = user.IsAdmin

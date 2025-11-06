@@ -3,7 +3,7 @@
 using System.Security.Claims;
 using FluentValidation;
 using GroceryStore.Application.Interfaces;
-using GroceryStore.Application.Validators; // for typeof(ProductCreateRequestValidator)
+using GroceryStore.Application.Validators; // validators live in Application layer
 using GroceryStore.Domain.Entities;
 using GroceryStore.Infrastructure.Logging;
 using GroceryStore.Infrastructure.Persistence;
@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // ------------------------------------------------------------
-// CORS (Angular dev host). Adjust origins if your port/host differs.
+// CORS: allow the Angular dev hosts to call this API
 builder.Services.AddCors(opts =>
 {
     opts.AddPolicy("Frontend", p =>
@@ -24,20 +24,20 @@ builder.Services.AddCors(opts =>
          .AllowCredentials());
 });
 
-// MVC + Swagger
+// MVC + Swagger for minimal API docs
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // ------------------------------------------------------------
-// Connection string guard (simple and explicit)
+// Connection string: fail fast if missing to avoid silent runtime errors
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrWhiteSpace(cs))
     throw new InvalidOperationException(
         "Connection string 'DefaultConnection' is missing/empty. " +
         "Add it to GroceryStore.API/appsettings*.json under ConnectionStrings.");
 
-// DbContext + EF console interceptor
+// DbContext + EF interceptor (logs SQL to console for learning/debugging)
 builder.Services.AddDbContext<GroceryDbContext>(options =>
 {
     options.UseSqlServer(cs, sql => sql.MigrationsAssembly("GroceryStore.Infrastructure"));
@@ -45,29 +45,29 @@ builder.Services.AddDbContext<GroceryDbContext>(options =>
 });
 
 // ------------------------------------------------------------
-// Identity (cookie auth only; NO JWT)
+// Identity: cookie-based auth (no JWT for this project)
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(opts =>
 {
-    // Password: min 8, at least 1 special, 1 number, 1 alphabet (lowercase ok)
+    // password rules from spec
     opts.Password.RequiredLength = 8;
-    opts.Password.RequireNonAlphanumeric = true; // special char
-    opts.Password.RequireDigit = true;           // number
-    opts.Password.RequireLowercase = true;       // alphabet
-    opts.Password.RequireUppercase = false;      // not required by spec
+    opts.Password.RequireNonAlphanumeric = true; // needs a special char
+    opts.Password.RequireDigit = true;           // needs a number
+    opts.Password.RequireLowercase = true;       // needs a lowercase letter
+    opts.Password.RequireUppercase = false;      // uppercase not required
 
-    // Email must be unique
+    // each email can register only once
     opts.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<GroceryDbContext>()
 .AddDefaultTokenProviders();
 
-// Cookie settings for an API (no redirects)
+// Cookie options tuned for APIs (return codes instead of redirects)
 builder.Services.ConfigureApplicationCookie(o =>
 {
     o.Cookie.Name = "GroceryStore.Auth";
     o.Cookie.HttpOnly = true;
-    o.Cookie.SameSite = SameSiteMode.None;
-    o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    o.Cookie.SameSite = SameSiteMode.None;                 // works with frontend on another origin
+    o.Cookie.SecurePolicy = CookieSecurePolicy.Always;     // HTTPS only
     o.SlidingExpiration = true;
     o.Events = new Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents
     {
@@ -76,7 +76,7 @@ builder.Services.ConfigureApplicationCookie(o =>
     };
 });
 
-// Authorization policy for admins via claim added at signup/login
+// Authorization policy: only users with is_admin=true can access admin endpoints
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy =>
@@ -84,12 +84,11 @@ builder.Services.AddAuthorization(options =>
 });
 
 // ------------------------------------------------------------
-// FluentValidation (no FluentValidation.AspNetCore)
-// Register validators from Application assembly and call them manually in controllers.
+// FluentValidation: register validators from Application and call in controllers
 builder.Services.AddValidatorsFromAssembly(typeof(ProductCreateRequestValidator).Assembly);
 
 // ------------------------------------------------------------
-// Repositories (simple, non-generic)
+// Repositories: simple DI registrations (non-generic approach)
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
@@ -97,6 +96,7 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 // ------------------------------------------------------------
 var app = builder.Build();
 
+// Swagger only in Development to keep production clean
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -104,19 +104,19 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors("Frontend");
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseCors("Frontend");          // apply the CORS policy
+app.UseAuthentication();          // set HttpContext.User from cookie
+app.UseAuthorization();           // check policies/attributes
 
-app.MapControllers();
+app.MapControllers();             // map attribute-routed controllers
 
 // ------------------------------------------------------------
-// Seed DB (simple, no migrations): creates DB if missing and seeds admin/products
+// Seed: run migrations and seed initial data (admin + sample products)
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<GroceryDbContext>();
-    await db.Database.MigrateAsync();          // ✅ apply migrations
-    await SeedData.InitializeAsync(scope.ServiceProvider); // seed WITHOUT EnsureCreated inside
+    await db.Database.MigrateAsync();                         // make sure DB schema is up to date
+    await SeedData.InitializeAsync(scope.ServiceProvider);    // seed without EnsureCreated
 }
 
 app.Run();

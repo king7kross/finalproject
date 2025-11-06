@@ -10,8 +10,8 @@ namespace GroceryStore.Infrastructure.Persistence
         public static async Task InitializeAsync(IServiceProvider services)
         {
             var ctx = services.GetRequiredService<GroceryDbContext>();
-            await ctx.Database.EnsureCreatedAsync(); // simpler: creates DB if it doesn’t exist
-                                                     // applies schema with the models
+            await ctx.Database.EnsureCreatedAsync();
+                                                    
 
             // Create admin user(s)
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
@@ -26,7 +26,7 @@ namespace GroceryStore.Infrastructure.Persistence
                     Email = adminEmail,
                     EmailConfirmed = true,
                     IsAdmin = true,
-                    FullName = "Administrator"  // <-- add this
+                    FullName = "Administrator"  
                 };
                 // Simple strong password to match password rules (we’ll validate at API later) :contentReference[oaicite:21]{index=21}
                 await userManager.CreateAsync(admin, "Admin@1234");
@@ -52,7 +52,7 @@ namespace GroceryStore.Infrastructure.Persistence
                         Name = "Whole Wheat Flour 5kg",
                         Description = "Stone-ground whole wheat flour.",
                         Category = "Flour",
-                        AvailableQuantity = 0, // to demo 'Out of Stock' :contentReference[oaicite:22]{index=22}
+                        AvailableQuantity = 0, 
                         ImageUrl = "/images/atta.jpg",
                         Price = 349.00m
                     }

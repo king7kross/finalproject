@@ -19,7 +19,7 @@ export class HeaderComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // Try to load current user (if cookie present)
+   
     this.auth.me().subscribe({
       next: me => {
         console.log('User loaded:', me);

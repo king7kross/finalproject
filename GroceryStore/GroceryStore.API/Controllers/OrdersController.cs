@@ -9,7 +9,7 @@ namespace GroceryStore.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // orders require login per spec
+    [Authorize] // orders are only for logged-in users
     public class OrdersController : ControllerBase
     {
         private readonly ICartRepository _carts;
@@ -18,26 +18,28 @@ namespace GroceryStore.API.Controllers
 
         public OrdersController(ICartRepository carts, IProductRepository products, IOrderRepository orders)
         {
+            // DI: use repositories to access data
             _carts = carts;
             _products = products;
             _orders = orders;
         }
 
+        // small helper to read current user id from claims
         private string? GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        // POST: /api/orders/place
+        // POST: /api/orders/place -> creates an order from the user's cart
         [HttpPost("place")]
         public async Task<ActionResult<PlaceOrderResponse>> PlaceOrder()
         {
             var userId = GetUserId();
             if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-            // load cart with product data
+            // get the cart with items and product info
             var cart = await _carts.GetForUserAsync(userId);
             if (cart == null || cart.Items.Count == 0)
                 return BadRequest(new { message = "Your cart is empty." });
 
-            // validate stock for each item (must be >0 and sufficient)
+            // check stock for every item before placing order
             foreach (var item in cart.Items)
             {
                 if (item.Product == null)
@@ -50,7 +52,7 @@ namespace GroceryStore.API.Controllers
                     return BadRequest(new { message = $"Requested quantity for '{item.Product.Name}' exceeds available stock." });
             }
 
-            // build the order items snapshot (unit price & discount captured now)
+            // take a snapshot of price/discount now for the order items
             var toCreate = cart.Items.Select(i =>
                 (productId: i.ProductId,
                  quantity: i.Quantity,
@@ -58,16 +60,16 @@ namespace GroceryStore.API.Controllers
                  discount: i.Product!.Discount))
                  .ToList();
 
-            // generate a unique order number (index enforced in Db)
+            // simple unique order number for tracking
             var orderNumber = GenerateOrderNumber();
 
-            // create order (also decrements stock in repository)
+            // create order (repository will also reduce stock)
             var order = await _orders.CreateOrderAsync(userId, orderNumber, toCreate);
 
-            // clear cart
+            // empty the cart after creating the order
             await _carts.ClearAsync(userId);
 
-            // persist both changes (simple approach; repos share the same scoped DbContext)
+            // save both changes; both repos share the same DbContext scope
             var savedOrder = await _orders.SaveChangesAsync();
             var savedCart = await _carts.SaveChangesAsync();
 
@@ -77,7 +79,7 @@ namespace GroceryStore.API.Controllers
             return Ok(new PlaceOrderResponse { OrderNumber = orderNumber });
         }
 
-        // GET: /api/orders/my
+        // GET: /api/orders/my -> returns the user's past orders
         [HttpGet("my")]
         public async Task<ActionResult<IEnumerable<MyOrderResponse>>> MyOrders()
         {
@@ -85,6 +87,8 @@ namespace GroceryStore.API.Controllers
             if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
             var orders = await _orders.GetOrdersForUserAsync(userId);
+
+            // map entities to a lightweight response model
             var resp = orders.Select(o => new MyOrderResponse
             {
                 OrderNumber = o.OrderNumber,
@@ -102,7 +106,7 @@ namespace GroceryStore.API.Controllers
             return Ok(resp);
         }
 
-        // simple unique order number (timestamp + random suffix)
+        // builds a readable id like ORD-20250101... with a short random suffix
         private static string GenerateOrderNumber()
         {
             var ts = DateTime.UtcNow.ToString("yyyyMMddHHmmss");

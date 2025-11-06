@@ -4,11 +4,12 @@ using GroceryStore.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-
 namespace GroceryStore.UnitTests
 {
+    // basic unit tests to check core repository behavior
     public class UnitTest1
     {
+        // in-memory EF Core options for isolated tests
         private DbContextOptions<GroceryDbContext> GetInMemoryOptions()
         {
             return new DbContextOptionsBuilder<GroceryDbContext>()
@@ -16,12 +17,10 @@ namespace GroceryStore.UnitTests
                 .Options;
         }
 
-       
-
         [Fact]
         public void TestSimpleUserCreation()
         {
-            // Simple, self-contained test — constructs an ApplicationUser and verifies properties.
+            // Simple object test: create user and verify fields
             var user = new ApplicationUser
             {
                 Id = "u1",
@@ -41,7 +40,7 @@ namespace GroceryStore.UnitTests
         [Fact]
         public async Task TestGetCartReturnsItems()
         {
-            // Arrange
+            // Arrange: create product and add to cart
             var options = GetInMemoryOptions();
             using var context = new GroceryDbContext(options);
             var repository = new CartRepository(context);
@@ -62,19 +61,19 @@ namespace GroceryStore.UnitTests
             await repository.AddItemAsync(userId, 1, 2);
             await repository.SaveChangesAsync();
 
-            // Act
+            // Act: read cart back
             var cart = await repository.GetForUserAsync(userId);
 
-            // Assert
+            // Assert: cart exists and has one item with qty=2
             Assert.NotNull(cart);
-            Assert.Single(cart.Items);
+            Assert.Single(cart!.Items);
             Assert.Equal(2, cart.Items.First().Quantity);
         }
 
         [Fact]
         public async Task TestGetProductsReturnsList()
         {
-            // Arrange
+            // Arrange: seed a product
             var options = GetInMemoryOptions();
             using var context = new GroceryDbContext(options);
             var repository = new ProductRepository(context);
@@ -91,10 +90,10 @@ namespace GroceryStore.UnitTests
             context.Products.Add(product);
             await context.SaveChangesAsync();
 
-            // Act
+            // Act: fetch paged list
             var result = await repository.GetPagedAsync(1, 10, null, false, null, null);
 
-            // Assert
+            // Assert: one item returned and name matches
             Assert.Equal(1, result.TotalCount);
             Assert.Single(result.Items);
             Assert.Equal("Test Product", result.Items.First().Name);
@@ -103,7 +102,7 @@ namespace GroceryStore.UnitTests
         [Fact]
         public async Task TestPlaceOrderSuccess()
         {
-            // Arrange
+            // Arrange: product with stock and one order item
             var options = GetInMemoryOptions();
             using var context = new GroceryDbContext(options);
             var repository = new OrderRepository(context);
@@ -127,23 +126,22 @@ namespace GroceryStore.UnitTests
                 (1, 2, 10.0m, null)
             };
 
-            // Act
+            // Act: create order and persist changes
             var order = await repository.CreateOrderAsync(userId, "ORD001", items);
             await repository.SaveChangesAsync();
 
-            // Assert
+            // Assert: order created and stock reduced by 2
             Assert.NotNull(order);
             Assert.Equal("ORD001", order.OrderNumber);
             Assert.Single(order.Items);
-            // reload product from context to ensure tracking reflects change
             var updatedProduct = await context.Products.FindAsync(1);
-            Assert.Equal(8, updatedProduct!.AvailableQuantity); // Stock decremented
+            Assert.Equal(8, updatedProduct!.AvailableQuantity);
         }
 
         [Fact]
         public void TestCartSubtotalCalculation()
         {
-            // Arrange
+            // Arrange: two cart items with different discounts/qty
             var cart = new Cart
             {
                 Items = new List<CartItem>
@@ -153,14 +151,14 @@ namespace GroceryStore.UnitTests
                 }
             };
 
-            // Act
+            // Act: compute subtotals and total
             var subtotal1 = (cart.Items.First().Product!.Price - cart.Items.First().Product!.Discount) * cart.Items.First().Quantity;
             var subtotal2 = (cart.Items.Last().Product!.Price - cart.Items.Last().Product!.Discount) * cart.Items.Last().Quantity;
             var total = subtotal1 + subtotal2;
 
-            // Assert
-            Assert.Equal(16.0m, subtotal1); // (10 - 2) * 2
-            Assert.Equal(20.0m, subtotal2); // (20 - 0) * 1
+            // Assert: (10-2)*2 = 16 and (20-0)*1 = 20; total 36
+            Assert.Equal(16.0m, subtotal1);
+            Assert.Equal(20.0m, subtotal2);
             Assert.Equal(36.0m, total);
         }
     }

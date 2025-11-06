@@ -14,10 +14,12 @@ namespace GroceryStore.API.Controllers
 
         public ProductsController(IProductRepository repo)
         {
+            // DI: products repository for data access
             _repo = repo;
         }
 
         // PUBLIC: GET /api/products?page=&pageSize=&sortBy=&desc=&category=&q=
+        // returns a paged, sorted, and filtered product list
         [HttpGet]
         [AllowAnonymous]
         public async Task<ActionResult<PagedResult<ProductResponse>>> Get([FromQuery] ProductListQuery query)
@@ -28,6 +30,7 @@ namespace GroceryStore.API.Controllers
                 query.SortBy, query.Desc,
                 query.Category, query.Q);
 
+            // map entities to a lightweight response for the client
             return Ok(new PagedResult<ProductResponse>
             {
                 Page = paged.Page,
@@ -37,22 +40,22 @@ namespace GroceryStore.API.Controllers
             });
         }
 
-        // PUBLIC: GET /api/products/{id}
+        // PUBLIC: GET /api/products/{id} -> fetch single product by id
         [HttpGet("{id:int}")]
         [AllowAnonymous]
         public async Task<ActionResult<ProductResponse>> GetById(int id)
         {
             var product = await _repo.GetByIdAsync(id);
-            if (product == null) return NotFound();
+            if (product == null) return NotFound(); // not found -> 404
             return Ok(MapToResponse(product));
         }
 
-        // ADMIN: POST /api/products
+        // ADMIN: POST /api/products -> create a new product
         [HttpPost]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Create([FromBody] ProductCreateRequest req)
         {
-            // ModelState auto-populated by FluentValidation
+            // ModelState filled by validators (short-circuits on invalid input)
             if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
             var product = new Product
@@ -70,10 +73,11 @@ namespace GroceryStore.API.Controllers
             await _repo.AddAsync(product);
             await _repo.SaveChangesAsync();
 
+            // return 201 + location header pointing to GetById
             return CreatedAtAction(nameof(GetById), new { id = product.Id }, MapToResponse(product));
         }
 
-        // ADMIN: PUT /api/products/{id}
+        // ADMIN: PUT /api/products/{id} -> update an existing product
         [HttpPut("{id:int}")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Update(int id, [FromBody] ProductUpdateRequest req)
@@ -83,6 +87,7 @@ namespace GroceryStore.API.Controllers
             var product = await _repo.GetByIdAsync(id);
             if (product == null) return NotFound();
 
+            // copy over fields from request
             product.Name = req.Name;
             product.Description = req.Description;
             product.Category = req.Category;
@@ -98,7 +103,7 @@ namespace GroceryStore.API.Controllers
             return Ok(MapToResponse(product));
         }
 
-        // ADMIN: DELETE /api/products/{id}
+        // ADMIN: DELETE /api/products/{id} -> remove a product
         [HttpDelete("{id:int}")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Delete(int id)
@@ -109,9 +114,10 @@ namespace GroceryStore.API.Controllers
             await _repo.DeleteAsync(product);
             await _repo.SaveChangesAsync();
 
-            return NoContent();
+            return NoContent(); // deletion succeeded, nothing to return
         }
 
+        // helper: map domain entity to response DTO
         private static ProductResponse MapToResponse(Product p) => new ProductResponse
         {
             Id = p.Id,

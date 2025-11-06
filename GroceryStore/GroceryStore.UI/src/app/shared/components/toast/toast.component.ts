@@ -6,7 +6,7 @@ import { ToastService } from '../../../core/services/toast.service';
 @Component({
   selector: 'gs-toast',
   standalone: true,
-  imports: [NgFor, AsyncPipe], // ✅ added AsyncPipe here
+  imports: [NgFor, AsyncPipe], 
   templateUrl: './toast.component.html'
 })
 export class ToastComponent {
