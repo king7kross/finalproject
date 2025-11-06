@@ -2,6 +2,7 @@
 using GroceryStore.Application.Models;
 using GroceryStore.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GroceryStore.API.Controllers
@@ -11,15 +12,20 @@ namespace GroceryStore.API.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductRepository _repo;
+        private readonly IReviewRepository _reviews;                // reviews repo
+        private readonly UserManager<ApplicationUser> _userManager; // for current user
 
-        public ProductsController(IProductRepository repo)
+        public ProductsController(
+            IProductRepository repo,
+            IReviewRepository reviews,
+            UserManager<ApplicationUser> userManager)
         {
-            // DI: products repository for data access
             _repo = repo;
+            _reviews = reviews;
+            _userManager = userManager;
         }
 
         // PUBLIC: GET /api/products?page=&pageSize=&sortBy=&desc=&category=&q=
-        // returns a paged, sorted, and filtered product list
         [HttpGet]
         [AllowAnonymous]
         public async Task<ActionResult<PagedResult<ProductResponse>>> Get([FromQuery] ProductListQuery query)
@@ -30,7 +36,6 @@ namespace GroceryStore.API.Controllers
                 query.SortBy, query.Desc,
                 query.Category, query.Q);
 
-            // map entities to a lightweight response for the client
             return Ok(new PagedResult<ProductResponse>
             {
                 Page = paged.Page,
@@ -40,22 +45,21 @@ namespace GroceryStore.API.Controllers
             });
         }
 
-        // PUBLIC: GET /api/products/{id} -> fetch single product by id
+        // PUBLIC: GET /api/products/{id}
         [HttpGet("{id:int}")]
         [AllowAnonymous]
         public async Task<ActionResult<ProductResponse>> GetById(int id)
         {
             var product = await _repo.GetByIdAsync(id);
-            if (product == null) return NotFound(); // not found -> 404
+            if (product == null) return NotFound();
             return Ok(MapToResponse(product));
         }
 
-        // ADMIN: POST /api/products -> create a new product
+        // ADMIN: POST /api/products
         [HttpPost]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Create([FromBody] ProductCreateRequest req)
         {
-            // ModelState filled by validators (short-circuits on invalid input)
             if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
             var product = new Product
@@ -73,11 +77,10 @@ namespace GroceryStore.API.Controllers
             await _repo.AddAsync(product);
             await _repo.SaveChangesAsync();
 
-            // return 201 + location header pointing to GetById
             return CreatedAtAction(nameof(GetById), new { id = product.Id }, MapToResponse(product));
         }
 
-        // ADMIN: PUT /api/products/{id} -> update an existing product
+        // ADMIN: PUT /api/products/{id}
         [HttpPut("{id:int}")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Update(int id, [FromBody] ProductUpdateRequest req)
@@ -87,7 +90,6 @@ namespace GroceryStore.API.Controllers
             var product = await _repo.GetByIdAsync(id);
             if (product == null) return NotFound();
 
-            // copy over fields from request
             product.Name = req.Name;
             product.Description = req.Description;
             product.Category = req.Category;
@@ -103,7 +105,7 @@ namespace GroceryStore.API.Controllers
             return Ok(MapToResponse(product));
         }
 
-        // ADMIN: DELETE /api/products/{id} -> remove a product
+        // ADMIN: DELETE /api/products/{id}
         [HttpDelete("{id:int}")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Delete(int id)
@@ -114,7 +116,76 @@ namespace GroceryStore.API.Controllers
             await _repo.DeleteAsync(product);
             await _repo.SaveChangesAsync();
 
-            return NoContent(); // deletion succeeded, nothing to return
+            return NoContent();
+        }
+
+        // -------- Reviews --------
+
+        // PUBLIC: GET /api/products/{id}/reviews
+        [HttpGet("{id:int}/reviews")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<ReviewResponse>>> GetReviews(int id)
+        {
+            var product = await _repo.GetByIdAsync(id);
+            if (product == null) return NotFound();
+
+            var list = await _reviews.GetForProductAsync(id);
+            var resp = list.Select(r => new ReviewResponse
+            {
+                Id = r.Id,
+                ProductId = r.ProductId,
+                UserId = r.UserId,
+                UserName = r.UserName,
+                Rating = r.Rating,
+                Comment = r.Comment,
+                CreatedAt = r.CreatedAt
+            });
+
+            return Ok(resp);
+        }
+
+        // AUTH: POST /api/products/{id}/reviews
+        [HttpPost("{id:int}/reviews")]
+        [Authorize]
+        public async Task<ActionResult<ReviewResponse>> CreateReview(int id, [FromBody] CreateReviewRequest req)
+        {
+            if (req.Rating < 1 || req.Rating > 5)
+                return BadRequest(new { message = "Rating must be between 1 and 5." });
+            if (string.IsNullOrWhiteSpace(req.Comment))
+                return BadRequest(new { message = "Comment is required." });
+
+            var product = await _repo.GetByIdAsync(id);
+            if (product == null) return NotFound();
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            var entity = new Review
+            {
+                ProductId = id,
+                UserId = user.Id,
+                UserName = string.IsNullOrWhiteSpace(user.FullName) ? user.Email : user.FullName,
+                Rating = req.Rating,
+                Comment = req.Comment.Trim(),
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _reviews.AddAsync(entity);
+            var ok = await _reviews.SaveChangesAsync();
+            if (!ok) return StatusCode(500, new { message = "Could not save review." });
+
+            var resp = new ReviewResponse
+            {
+                Id = entity.Id,
+                ProductId = entity.ProductId,
+                UserId = entity.UserId,
+                UserName = entity.UserName,
+                Rating = entity.Rating,
+                Comment = entity.Comment,
+                CreatedAt = entity.CreatedAt
+            };
+
+            return CreatedAtAction(nameof(GetReviews), new { id = entity.ProductId }, resp);
         }
 
         // helper: map domain entity to response DTO
