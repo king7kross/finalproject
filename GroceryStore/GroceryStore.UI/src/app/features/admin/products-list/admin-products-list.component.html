@@ -1,7 +1,14 @@
 <h2>Admin - Products</h2>
 
-<div class="add-product-button">
-  <a routerLink="/admin/add">+ Add Product</a>
+<div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px;">
+  <div class="add-product-button">
+    <a routerLink="/admin/add">+ Add Product</a>
+  </div>
+
+  <!-- ✅ New: View Analytics button -->
+  <div>
+    <a routerLink="/admin/analytics"> View Analytics</a>
+  </div>
 </div>
 
 <section *ngIf="loading">Loading...</section>
@@ -31,5 +38,3 @@
     </tr>
   </tbody>
 </table>
-
-

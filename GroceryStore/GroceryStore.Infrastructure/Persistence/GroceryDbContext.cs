@@ -13,17 +13,16 @@ namespace GroceryStore.Infrastructure.Persistence
         public DbSet<CartItem> CartItems => Set<CartItem>();
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
-        
+        public DbSet<Review> Reviews => Set<Review>(); // 👈 add
+
         protected override void OnModelCreating(ModelBuilder b)
         {
             base.OnModelCreating(b);
 
-            // Users: unique email 
             b.Entity<ApplicationUser>()
              .HasIndex(u => u.Email)
              .IsUnique();
 
-            // Product field constraints 
             b.Entity<Product>()
              .Property(p => p.Price)
              .HasColumnType("decimal(18,2)");
@@ -31,7 +30,6 @@ namespace GroceryStore.Infrastructure.Persistence
             b.Entity<Product>()
               .Property(p => p.Discount)
               .HasColumnType("decimal(18,2)");
-
 
             b.Entity<OrderItem>()
              .Property(oi => oi.UnitPrice)
@@ -41,24 +39,36 @@ namespace GroceryStore.Infrastructure.Persistence
              .Property(oi => oi.DiscountAtPurchase)
              .HasColumnType("decimal(18,2)");
 
-            // Cart relationships
             b.Entity<Cart>()
              .HasMany(c => c.Items)
              .WithOne(i => i.Cart!)
              .HasForeignKey(i => i.CartId)
              .OnDelete(DeleteBehavior.Cascade);
 
-            // Order relationships
             b.Entity<Order>()
              .HasMany(o => o.Items)
              .WithOne(i => i.Order!)
              .HasForeignKey(i => i.OrderId)
              .OnDelete(DeleteBehavior.Cascade);
 
-            // Unique order number for user display 
             b.Entity<Order>()
              .HasIndex(o => o.OrderNumber)
              .IsUnique();
+
+            // 👇 Reviews ↔ Product (1:N)
+            b.Entity<Review>()
+             .HasOne(r => r.Product)
+             .WithMany()                          // (optional) if you want Product.Reviews, add a collection on Product and change this
+             .HasForeignKey(r => r.ProductId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.Entity<Review>()
+             .Property(r => r.Comment)
+             .HasMaxLength(500);
+
+            b.Entity<Review>()
+             .Property(r => r.UserName)
+             .HasMaxLength(100);
         }
     }
 }

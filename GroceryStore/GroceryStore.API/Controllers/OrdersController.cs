@@ -116,6 +116,25 @@ namespace GroceryStore.API.Controllers
             return Ok(resp);
         }
 
+        // 🔎 ADMIN: GET /api/orders/analytics/top-products?year=YYYY&month=MM&top=5
+        // Returns top N (default 5) most ordered products for given month/year. Defaults to current month/year.
+        [HttpGet("analytics/top-products")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<ActionResult<IEnumerable<TopProductResponse>>> TopProducts([FromQuery] int? year, [FromQuery] int? month, [FromQuery] int? top)
+        {
+            var now = DateTime.UtcNow;
+            int y = year ?? now.Year;
+            int m = month ?? now.Month;
+
+            if (m < 1 || m > 12) return BadRequest(new { message = "Month must be between 1 and 12." });
+            int n = top.GetValueOrDefault(5);
+            if (n <= 0) n = 5;
+            if (n > 50) n = 50;
+
+            var data = await _orders.GetTopProductsByMonthAsync(y, m, n);
+            return Ok(data);
+        }
+
         // builds a readable id like ORD-20250101... with a short random suffix
         private static string GenerateOrderNumber()
         {

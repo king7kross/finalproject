@@ -1,14 +1,14 @@
-// src/app/core/services/products.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { Product, PagedResult } from '../../shared/models/product.models';
+import { Review, CreateReviewRequest } from '../../shared/models/review.models';
 
 export interface ProductQuery {
   page?: number;
   pageSize?: number;
-  sortBy?: string;  // e.g. 'name' | 'price'
+  sortBy?: string;   // 'name' | 'price' | 'category'
   desc?: boolean;
   category?: string;
   q?: string;
@@ -20,6 +20,7 @@ export class ProductsService {
 
   constructor(private http: HttpClient) { }
 
+  // -------- Products --------
   getProducts(query: ProductQuery): Observable<PagedResult<Product>> {
     let params = new HttpParams();
     if (query.page) params = params.set('page', query.page);
@@ -36,9 +37,8 @@ export class ProductsService {
     return this.http.get<Product>(`${this.base}/${id}`);
   }
 
-  // Admin endpoints
+  // Admin
   createProduct(productData: any) {
-    // expects JSON object matching ProductCreateRequest
     return this.http.post(`${this.base}`, productData);
   }
 
@@ -50,4 +50,12 @@ export class ProductsService {
     return this.http.delete(`${this.base}/${id}`);
   }
 
+  // -------- Reviews --------
+  getReviews(productId: number): Observable<Review[]> {
+    return this.http.get<Review[]>(`${this.base}/${productId}/reviews`);
+  }
+
+  addReview(productId: number, payload: CreateReviewRequest): Observable<Review> {
+    return this.http.post<Review>(`${this.base}/${productId}/reviews`, payload);
+  }
 }
