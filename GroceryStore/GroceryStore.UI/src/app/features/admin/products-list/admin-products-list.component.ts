@@ -4,6 +4,7 @@ import { ProductsService } from '../../../core/services/products.service';
 import { Product, PagedResult } from '../../../shared/models/product.models';
 import { NgFor, NgIf, CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { BrowserModule } from '@angular/platform-browser';
 
 @Component({
   standalone: true,

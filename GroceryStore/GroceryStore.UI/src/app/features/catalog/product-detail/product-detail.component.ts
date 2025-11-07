@@ -7,7 +7,7 @@ import { CartService } from '../../../core/services/cart.service';
 import { FormsModule } from '@angular/forms';
 import { Review, CreateReviewRequest } from '../../../shared/models/review.models';
 import { UserStore } from '../../../core/state/user.store';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -28,6 +28,14 @@ import { Observable, map } from 'rxjs';
         <h2 style="margin:0 0 8px 0;">{{ product!.name }}</h2>
         <div style="color:#666; margin-bottom:8px;">Category: {{ product!.category }}</div>
         <p style="margin-top:0;">{{ product!.description }}</p>
+
+        <!-- ✅ Specifications block -->
+        <div *ngIf="specLines.length > 0" style="margin:12px 0;">
+          <h3 style="margin:0 0 6px 0; font-size:16px;">Specifications</h3>
+          <ul style="margin:0; padding-left:18px;">
+            <li *ngFor="let s of specLines">{{ s }}</li>
+          </ul>
+        </div>
 
         <div style="display:flex; align-items:baseline; gap:8px; margin:12px 0;">
           <span style="font-size:18px;">{{ (product!.price - (product!.discount || 0)) | currency:'INR':'symbol' }}</span>
@@ -107,6 +115,9 @@ export class ProductDetailComponent implements OnInit {
   qty = 1;
   qtyOptions: number[] = [];
 
+  // ✅ spec lines to render as bullets
+  specLines: string[] = [];
+
   reviews: Review[] = [];
   reviewsLoading = false;
 
@@ -137,9 +148,17 @@ export class ProductDetailComponent implements OnInit {
       next: p => {
         this.product = p;
         this.loading = false;
+
+        // build qty options
         const max = Math.min(10, Math.max(0, p.availableQuantity));
         this.qtyOptions = Array.from({ length: max }, (_, i) => i + 1);
         this.qty = this.qtyOptions.length > 0 ? 1 : 0;
+
+        // ✅ split specification into bullet points (new line / semicolon / comma / •)
+        const raw = (p.specification ?? '').trim();
+        this.specLines = raw
+          ? raw.split(/[\r\n]+|;|,|•/).map(s => s.trim()).filter(Boolean)
+          : [];
       },
       error: _ => { this.product = null; this.loading = false; }
     });
