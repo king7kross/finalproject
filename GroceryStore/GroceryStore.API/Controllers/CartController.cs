@@ -6,6 +6,7 @@ using System.Security.Claims;
 
 namespace GroceryStore.API.Controllers
 {
+    //marks the class as api controller
     [ApiController]
     [Route("api/[controller]")]
     [Authorize] // only signed-in users can work with their cart
@@ -20,7 +21,7 @@ namespace GroceryStore.API.Controllers
             _products = products;
         }
 
-        // quick helper: read the current user's id from claims
+        // read the current user's id from claims
         private string? GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         // GET /api/cart -> returns the current user's cart
@@ -33,7 +34,7 @@ namespace GroceryStore.API.Controllers
             var cart = await _carts.GetOrCreateForUserAsync(userId);
 
             // map entity to a simple response model for the client
-            var resp = new CartResponse
+            var response = new CartResponse
             {
                 Items = cart.Items.Select(i => new CartItemResponse
                 {
@@ -49,7 +50,7 @@ namespace GroceryStore.API.Controllers
             };
 
             // if Items is empty, frontend will show "No Items in Cart"
-            return Ok(resp);
+            return Ok(response);
         }
 
         // POST /api/cart/items -> add a product to the cart

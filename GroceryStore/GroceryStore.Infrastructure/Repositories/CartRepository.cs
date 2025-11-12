@@ -8,28 +8,28 @@ namespace GroceryStore.Infrastructure.Repositories
     // CartRepository: handles CRUD for a user's cart using EF Core
     public class CartRepository : ICartRepository
     {
-        private readonly GroceryDbContext _ctx;
-        public CartRepository(GroceryDbContext ctx) => _ctx = ctx;
+        private readonly GroceryDbContext _grocerydb;
+        public CartRepository(GroceryDbContext grocerydb) => _grocerydb = grocerydb;
 
         // get the user's cart; create one if it doesn't exist yet
         public async Task<Cart> GetOrCreateForUserAsync(string userId)
         {
-            var cart = await _ctx.Carts
+            var cart = await _grocerydb.Carts
                 .Include(c => c.Items).ThenInclude(i => i.Product) // eager load items + products
                 .FirstOrDefaultAsync(c => c.UserId == userId);
 
             if (cart == null)
             {
                 cart = new Cart { UserId = userId };              // new empty cart
-                await _ctx.Carts.AddAsync(cart);
-                await _ctx.SaveChangesAsync();                    // save so it has an Id
+                await _grocerydb.Carts.AddAsync(cart);
+                await _grocerydb.SaveChangesAsync();                    // save so it has an Id
             }
             return cart;
         }
 
         // just read the cart (no creation)
         public Task<Cart?> GetForUserAsync(string userId) =>
-            _ctx.Carts
+            _grocerydb.Carts
                 .Include(c => c.Items).ThenInclude(i => i.Product)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
 
@@ -58,17 +58,17 @@ namespace GroceryStore.Infrastructure.Repositories
         {
             var cart = await GetForUserAsync(userId);
             var item = cart?.Items.FirstOrDefault(i => i.Id == cartItemId);
-            if (item != null) _ctx.CartItems.Remove(item);
+            if (item != null) _grocerydb.CartItems.Remove(item);
         }
 
         // clear all items from the cart
         public async Task ClearAsync(string userId)
         {
             var cart = await GetForUserAsync(userId);
-            if (cart != null) _ctx.CartItems.RemoveRange(cart.Items);
+            if (cart != null) _grocerydb.CartItems.RemoveRange(cart.Items);
         }
 
         // save pending EF Core changes; returns true if something was written
-        public async Task<bool> SaveChangesAsync() => (await _ctx.SaveChangesAsync()) > 0;
+        public async Task<bool> SaveChangesAsync() => (await _grocerydb.SaveChangesAsync()) > 0;
     }
 }

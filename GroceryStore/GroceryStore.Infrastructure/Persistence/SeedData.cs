@@ -9,11 +9,11 @@ namespace GroceryStore.Infrastructure.Persistence
     {
         public static async Task InitializeAsync(IServiceProvider services)
         {
-            var ctx = services.GetRequiredService<GroceryDbContext>();
-            await ctx.Database.EnsureCreatedAsync();
+            var reqService = services.GetRequiredService<GroceryDbContext>();
+            await reqService.Database.EnsureCreatedAsync();
                                                     
 
-            // Create admin user(s)
+            // Create admin user
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
             var adminEmail = "admin@example.com";
             var admin = await userManager.Users.FirstOrDefaultAsync(u => u.Email == adminEmail);
@@ -28,14 +28,14 @@ namespace GroceryStore.Infrastructure.Persistence
                     IsAdmin = true,
                     FullName = "Administrator"  
                 };
-                // Simple strong password to match password rules (we’ll validate at API later) :contentReference[oaicite:21]{index=21}
+                // Simple strong password to match password rules 
                 await userManager.CreateAsync(admin, "Admin@1234");
             }
 
             // Seed a few products if none exist
-            if (!await ctx.Products.AnyAsync())
+            if (!await reqService.Products.AnyAsync())
             {
-                ctx.Products.AddRange(
+                reqService.Products.AddRange(
                     new Product
                     {
                         Name = "Basmati Rice 5kg",
@@ -57,7 +57,7 @@ namespace GroceryStore.Infrastructure.Persistence
                         Price = 349.00m
                     }
                 );
-                await ctx.SaveChangesAsync();
+                await reqService.SaveChangesAsync();
             }
         }
     }

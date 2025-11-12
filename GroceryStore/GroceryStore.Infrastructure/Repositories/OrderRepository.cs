@@ -9,8 +9,8 @@ namespace GroceryStore.Infrastructure.Repositories
     // OrderRepository: creates orders and fetches a user's order history
     public class OrderRepository : IOrderRepository
     {
-        private readonly GroceryDbContext _ctx;
-        public OrderRepository(GroceryDbContext ctx) => _ctx = ctx;
+        private readonly GroceryDbContext _grocerydb;
+        public OrderRepository(GroceryDbContext grocerydb) => _grocerydb = grocerydb;
 
         // create a new order from given line items and reduce product stock
         public async Task<Order> CreateOrderAsync(
@@ -19,37 +19,37 @@ namespace GroceryStore.Infrastructure.Repositories
         {
             var order = new Order { UserId = userId, OrderNumber = orderNumber };
 
-            foreach (var it in items)
+            foreach (var item in items)
             {
-                // snapshot price/discount at purchase time
+                // price/discount at purchase time
                 order.Items.Add(new OrderItem
                 {
-                    ProductId = it.productId,
-                    Quantity = it.quantity,
-                    UnitPrice = it.unitPrice,
-                    DiscountAtPurchase = it.discount
+                    ProductId = item.productId,
+                    Quantity = item.quantity,
+                    UnitPrice = item.unitPrice,
+                    DiscountAtPurchase = item.discount
                 });
 
                 // reduce available stock for this product
-                var product = await _ctx.Products.FirstAsync(p => p.Id == it.productId);
-                product.AvailableQuantity -= it.quantity;
+                var product = await _grocerydb.Products.FirstAsync(p => p.Id == item.productId);
+                product.AvailableQuantity -= item.quantity;
             }
 
-            _ctx.Orders.Add(order); // track the new order
-            return order;           // caller will SaveChanges
+            _grocerydb.Orders.Add(order); // track the new order
+            return order;          
         }
 
         // list orders for a user (newest first), including items and product info
         public async Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string userId)
         {
-            return await _ctx.Orders
+            return await _grocerydb.Orders
                 .Include(o => o.Items).ThenInclude(i => i.Product)
                 .Where(o => o.UserId == userId)
                 .OrderByDescending(o => o.CreatedAt)
                 .ToListAsync();
         }
 
-        // 🔎 Admin analytics: Top N products for a given month/year
+        // Admin analytics: Top 5 products for a given month/year
         public async Task<IReadOnlyList<TopProductResponse>> GetTopProductsByMonthAsync(int year, int month, int topN = 5)
         {
             if (month < 1 || month > 12) throw new ArgumentOutOfRangeException(nameof(month));
@@ -59,7 +59,7 @@ namespace GroceryStore.Infrastructure.Repositories
 
             // Sum quantities per product within the month range
             var query =
-                from oi in _ctx.OrderItems
+                from oi in _grocerydb.OrderItems
                     .Include(x => x.Order)
                     .Include(x => x.Product)
                 where oi.Order != null
@@ -81,6 +81,6 @@ namespace GroceryStore.Infrastructure.Repositories
         }
 
         // persist pending changes; true if something was saved
-        public async Task<bool> SaveChangesAsync() => (await _ctx.SaveChangesAsync()) > 0;
+        public async Task<bool> SaveChangesAsync() => (await _grocerydb.SaveChangesAsync()) > 0;
     }
 }

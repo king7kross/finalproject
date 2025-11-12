@@ -53,8 +53,8 @@ namespace GroceryStore.API.Controllers
                     return BadRequest(new { message = $"Requested quantity for '{item.Product.Name}' exceeds available stock." });
             }
 
-            // take a snapshot of price/discount now for the order items
-            var toCreate = cart.Items.Select(i =>
+            
+            var orderItems = cart.Items.Select(i =>
                 (productId: i.ProductId,
                  quantity: i.Quantity,
                  unitPrice: i.Product!.Price,
@@ -65,12 +65,12 @@ namespace GroceryStore.API.Controllers
             var orderNumber = GenerateOrderNumber();
 
             // create order (repository should also reduce stock)
-            await _orders.CreateOrderAsync(userId, orderNumber, toCreate);
+            await _orders.CreateOrderAsync(userId, orderNumber, orderItems);
 
             // empty the cart after creating the order
             await _carts.ClearAsync(userId);
 
-            // 🔧 Single save for the shared DbContext (Unit of Work)
+            // Single save for the shared DbContext (Unit of Work)
             var saved = await _orders.SaveChangesAsync();
             if (!saved)
                 return StatusCode(500, new { message = "Could not place order." });
@@ -87,16 +87,15 @@ namespace GroceryStore.API.Controllers
 
             var orders = await _orders.GetOrdersForUserAsync(userId);
 
-            // map entities to a lightweight response model including total
-            var resp = orders.Select(o =>
+            var orderresponse = orders.Select(o =>
             {
-                var items = o.Items.Select(oi => new MyOrderItemResponse
+                var items = o.Items.Select(i => new MyOrderItemResponse
                 {
-                    ProductId = oi.ProductId,
-                    ProductName = oi.Product?.Name ?? string.Empty,
-                    Quantity = oi.Quantity,
-                    UnitPrice = oi.UnitPrice,
-                    DiscountAtPurchase = oi.DiscountAtPurchase
+                    ProductId = i.ProductId,
+                    ProductName = i.Product?.Name ?? string.Empty,
+                    Quantity = i.Quantity,
+                    UnitPrice = i.UnitPrice,
+                    DiscountAtPurchase = i.DiscountAtPurchase
                 }).ToList();
 
                 var total = items.Sum(oi =>
@@ -113,34 +112,34 @@ namespace GroceryStore.API.Controllers
                 };
             });
 
-            return Ok(resp);
+            return Ok(orderresponse);
         }
 
-        // 🔎 ADMIN: GET /api/orders/analytics/top-products?year=YYYY&month=MM&top=5
-        // Returns top N (default 5) most ordered products for given month/year. Defaults to current month/year.
+        // GET /api/orders/analytics/top-products?year=YYYY&month=MM&top=5
+        // Returns 5 most ordered products for given month/year. Defaults to current month/year.
         [HttpGet("analytics/top-products")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<IEnumerable<TopProductResponse>>> TopProducts([FromQuery] int? year, [FromQuery] int? month, [FromQuery] int? top)
         {
-            var now = DateTime.UtcNow;
-            int y = year ?? now.Year;
-            int m = month ?? now.Month;
+            var dateTime = DateTime.UtcNow;
+            int years = year ?? dateTime.Year;
+            int months = month ?? dateTime.Month;
 
-            if (m < 1 || m > 12) return BadRequest(new { message = "Month must be between 1 and 12." });
-            int n = top.GetValueOrDefault(5);
-            if (n <= 0) n = 5;
-            if (n > 50) n = 50;
+            if (months < 1 || months > 12) return BadRequest(new { message = "Month must be between 1 and 12." });
+            int range = top.GetValueOrDefault(5);
+            if (range <= 0) range = 5;
+            if (range > 50) range = 50;
 
-            var data = await _orders.GetTopProductsByMonthAsync(y, m, n);
+            var data = await _orders.GetTopProductsByMonthAsync(years, months, range);
             return Ok(data);
         }
 
         // builds a readable id like ORD-20250101... with a short random suffix
         private static string GenerateOrderNumber()
         {
-            var ts = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
-            var rnd = Guid.NewGuid().ToString("N")[..6].ToUpperInvariant();
-            return $"ORD-{ts}-{rnd}";
+            var currentTime = DateTime.Now.ToString("yyyyMMddHHmmss");
+            var randomString = Guid.NewGuid().ToString("N")[..6].ToUpper();
+            return $"ORD-{currentTime}-{randomString}";
         }
     }
 }

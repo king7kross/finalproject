@@ -12,14 +12,14 @@ namespace GroceryStore.Infrastructure.Repositories
         private static readonly HashSet<string> Sortable = new(StringComparer.OrdinalIgnoreCase)
             { "name", "price", "category" }; // allow sorting only on these simple fields
 
-        private readonly GroceryDbContext _ctx;
-        public ProductRepository(GroceryDbContext ctx) => _ctx = ctx;
+        private readonly GroceryDbContext _grocerydb;
+        public ProductRepository(GroceryDbContext grocerydb) => _grocerydb = grocerydb;
 
         // returns a paged list of products with optional filter/search/sort
         public async Task<PagedResult<Product>> GetPagedAsync(
             int page, int pageSize, string? sortBy, bool desc, string? category, string? query)
         {
-            var q = _ctx.Products.AsQueryable();
+            var q = _grocerydb.Products.AsQueryable();
 
             // filter by category if provided
             if (!string.IsNullOrWhiteSpace(category))
@@ -32,17 +32,20 @@ namespace GroceryStore.Infrastructure.Repositories
             // apply sorting only if the field is in the whitelist
             if (!string.IsNullOrWhiteSpace(sortBy) && Sortable.Contains(sortBy))
             {
-                q = (sortBy.ToLower()) switch
+                if (sortBy.ToLower() == "price")
                 {
-                    "price" => (desc ? q.OrderByDescending(p => p.Price) : q.OrderBy(p => p.Price)),
-                    "category" => (desc ? q.OrderByDescending(p => p.Category) : q.OrderBy(p => p.Category)),
-                    _ => (desc ? q.OrderByDescending(p => p.Name) : q.OrderBy(p => p.Name)),
-                };
+                    q = desc ? q.OrderByDescending(p => p.Price) : q.OrderBy(p => p.Price);
+                }
+                else
+                {
+                    q = desc ? q.OrderByDescending(p => p.Name) : q.OrderBy(p => p.Name);
+                }
             }
             else
             {
                 q = q.OrderBy(p => p.Name); // default sort
             }
+
 
             // paging (skip/take)
             var total = await q.CountAsync();
@@ -51,27 +54,27 @@ namespace GroceryStore.Infrastructure.Repositories
             return new PagedResult<Product> { Items = items, TotalCount = total, Page = page, PageSize = pageSize };
         }
 
-        // find by id (EF Core shortcut)
-        public Task<Product?> GetByIdAsync(int id) => _ctx.Products.FindAsync(id).AsTask();
+        // find by id 
+        public Task<Product?> GetByIdAsync(int id) => _grocerydb.Products.FindAsync(id).AsTask();
 
         // create
-        public async Task AddAsync(Product product) => await _ctx.Products.AddAsync(product);
+        public async Task AddAsync(Product product) => await _grocerydb.Products.AddAsync(product);
 
         // update (mark entity as modified)
         public Task UpdateAsync(Product product)
         {
-            _ctx.Products.Update(product);
+            _grocerydb.Products.Update(product);
             return Task.CompletedTask;
         }
 
         // delete
         public Task DeleteAsync(Product product)
         {
-            _ctx.Products.Remove(product);
+            _grocerydb.Products.Remove(product);
             return Task.CompletedTask;
         }
 
         // save pending changes; true if at least one row affected
-        public async Task<bool> SaveChangesAsync() => (await _ctx.SaveChangesAsync()) > 0;
+        public async Task<bool> SaveChangesAsync() => (await _grocerydb.SaveChangesAsync()) > 0;
     }
 }

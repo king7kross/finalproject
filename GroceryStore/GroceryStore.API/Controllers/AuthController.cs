@@ -7,6 +7,7 @@ using System.Security.Claims;
 
 namespace GroceryStore.API.Controllers
 {
+    //marks the class as controller class rather than the mvc class
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
@@ -20,18 +21,17 @@ namespace GroceryStore.API.Controllers
             _signInManager = signInManager;
         }
 
+
+    //endpoint of api/auth/signup
         [HttpPost("signup")]
         [AllowAnonymous]
         public async Task<IActionResult> Signup([FromBody] SignupRequest req)
         {
-            if (req.Password != req.ConfirmPassword)
-                return BadRequest(new { message = "Passwords do not match." });
-
             var existing = await _userManager.FindByEmailAsync(req.Email);
             if (existing != null)
                 return BadRequest(new { message = "Email already registered." });
 
-            var user = new ApplicationUser
+            var user = new ApplicationUser      
             {
                 UserName = req.Email,
                 Email = req.Email,
@@ -49,13 +49,11 @@ namespace GroceryStore.API.Controllers
                 new Claim("is_admin", user.IsAdmin ? "true" : "false")
             });
 
-            // ❌ Remove auto-login on signup
-            // await _signInManager.SignInAsync(user, isPersistent: false);
-
-            // ✅ Return simple success; client will redirect to /login
+            // client will redirect to /login
             return StatusCode(StatusCodes.Status201Created, new { message = "Signup successful. Please login." });
         }
 
+        //endpoint of api/auth/login
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<ActionResult<UserResponse>> Login([FromBody] LoginRequest req)
@@ -84,6 +82,8 @@ namespace GroceryStore.API.Controllers
             };
         }
 
+
+        //endpoint of api/auth/logout
         [HttpPost("logout")]
         [Authorize]
         public async Task<IActionResult> Logout()
@@ -92,6 +92,7 @@ namespace GroceryStore.API.Controllers
             return Ok(new { message = "Logged out." });
         }
 
+        //endpoint of api/auth/me
         [HttpGet("me")]
         [Authorize]
         public async Task<ActionResult<UserResponse>> Me()

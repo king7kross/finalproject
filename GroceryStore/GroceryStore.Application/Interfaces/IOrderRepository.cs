@@ -8,14 +8,12 @@ namespace GroceryStore.Application.Interfaces
 {
     public interface IOrderRepository
     {
-        Task<Order> CreateOrderAsync(                                // place a new order
-            string userId,
-            string orderNumber,
+        Task<Order> CreateOrderAsync(string userId, string orderNumber,  // place a new order                          
             IEnumerable<(int productId, int quantity, decimal unitPrice, decimal? discount)> items);
 
         Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string userId); // list my orders
 
-        // 🔎 Admin analytics: top products for a given month/year
+        // Admin analytics: top products for a given month/year
         Task<IReadOnlyList<TopProductResponse>> GetTopProductsByMonthAsync(int year, int month, int topN = 5);
 
         Task<bool> SaveChangesAsync();                                   // persist changes

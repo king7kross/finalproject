@@ -6,7 +6,8 @@ namespace GroceryStore.Domain.Entities
     {
         public int Id { get; set; }
 
-        [Required, MaxLength(100)] // Product Name 
+        [Required] // Product Name 
+        [MaxLength(100)]
         public string Name { get; set; } = default!;
 
         [Required, MaxLength(255)] // Description
