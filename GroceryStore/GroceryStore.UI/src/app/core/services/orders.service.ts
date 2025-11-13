@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { OrderDto } from '../../shared/models/order.models';
-import { TopProduct } from '../../shared/models/admin.models'; // 👈 add this import
+import { TopProduct } from '../../shared/models/admin.models'; 
 
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
@@ -19,7 +19,7 @@ export class OrdersService {
     return this.http.get<OrderDto[]>(`${this.base}/my`);
   }
 
-  // 👇 NEW: Admin analytics
+  // Admin analytics
   getTopProducts(year?: number, month?: number, top: number = 5): Observable<TopProduct[]> {
     let params = new HttpParams();
     if (year) params = params.set('year', String(year));

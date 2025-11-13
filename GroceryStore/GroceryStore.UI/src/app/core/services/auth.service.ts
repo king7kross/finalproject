@@ -10,7 +10,7 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  // ✅ Signup no longer returns a logged-in user; just a message
+  
   signup(payload: SignupRequest): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${this.base}/signup`, payload);
   }

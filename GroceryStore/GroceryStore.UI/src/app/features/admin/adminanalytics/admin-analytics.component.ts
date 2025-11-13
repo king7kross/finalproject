@@ -8,45 +8,7 @@ import { TopProduct } from '../../../shared/models/admin.models';
   standalone: true,
   selector: 'app-admin-analytics',
   imports: [CommonModule, FormsModule, NgIf, NgFor],
-  template: `
-    <h2 style="margin:0 0 12px 0;">Top 5 Products (by Orders)</h2>
-
-    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px;">
-      <label>Year:
-        <select [(ngModel)]="year" (change)="fetch()">
-          <option *ngFor="let y of years" [value]="y">{{ y }}</option>
-        </select>
-      </label>
-
-      <label>Month:
-        <select [(ngModel)]="month" (change)="fetch()">
-          <option *ngFor="let m of months" [value]="m.value">{{ m.label }}</option>
-        </select>
-      </label>
-
-      <button (click)="fetch()" [disabled]="loading">Refresh</button>
-      <span *ngIf="loading">Loading...</span>
-    </div>
-
-    <div *ngIf="!loading && data.length === 0" style="color:#666;">No data for the selected period.</div>
-
-    <table *ngIf="!loading && data.length > 0" style="width:100%; border-collapse:collapse;">
-      <thead>
-        <tr style="text-align:left; border-bottom:1px solid #eee;">
-          <th style="padding:8px;">#</th>
-          <th style="padding:8px;">Product</th>
-          <th style="padding:8px; text-align:right;">Total Quantity</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let row of data; let i = index" style="border-bottom:1px solid #f2f2f2;">
-          <td style="padding:8px; width:56px;">{{ i + 1 }}</td>
-          <td style="padding:8px;">{{ row.productName }}</td>
-          <td style="padding:8px; text-align:right;">{{ row.totalQuantity }}</td>
-        </tr>
-      </tbody>
-    </table>
-  `
+  templateUrl: './admin-analytics.component.html'
 })
 export class AdminAnalyticsComponent implements OnInit {
   year!: number;

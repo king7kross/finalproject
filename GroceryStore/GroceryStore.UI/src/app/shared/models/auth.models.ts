@@ -4,7 +4,7 @@ export interface SignupRequest {
   email: string;
   password: string;
   confirmPassword: string;
-  phoneNumber: string; // matches backend expectation
+  phoneNumber: string; // matches backend
 }
 
 export interface LoginRequest {

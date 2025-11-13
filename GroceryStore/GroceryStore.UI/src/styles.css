@@ -1,13 +1,11 @@
-/* --- Professional & Elegant Theme --- */
 
-/* Global Styles */
+
+/* Styles */
 html, body {
   margin: 0;
   padding: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  /* Use a slightly cleaner, modern off-white */
   background: #f7f8fa; 
-  /* Darker text for better contrast and readability */
   color: #222; 
   line-height: 1.6;
 }
@@ -23,13 +21,11 @@ main {
   max-width: 1200px;
   margin: 0 auto;
   background: #fff;
-  /* Soften the shadow for a more subtle lift */
   box-shadow: 0 2px 12px rgba(0,0,0,0.07);
 }
 
 /* Header */
 header {
-  /* Main brand color: A deep, professional blue */
   background: #2d5580; 
   color: white;
   padding: 15px 20px;
@@ -40,7 +36,7 @@ header {
 }
 
 header .logo {
-  color: #ffffff; /* Brighter white for the logo */
+  color: #ffffff; 
   text-decoration: none;
   font-weight: 600;
   font-size: 24px;
@@ -48,7 +44,6 @@ header .logo {
 }
 
 header .logo:hover {
-  /* A muted gold provides a very elegant secondary accent */
   color: #f0ca6a; 
 }
 
@@ -59,7 +54,7 @@ header nav {
 }
 
 header nav a {
-  color: #ecf0f1; /* Light, neutral text for nav items */
+  color: #ecf0f1; 
   text-decoration: none;
   font-weight: 500;
   transition: all 0.3s;
@@ -68,8 +63,7 @@ header nav a {
 }
 
 header nav a:hover {
-  color: #ffffff; /* Brighten on hover */
-  /* A very subtle background to highlight the active link */
+  color: #ffffff; 
   background: rgba(255, 255, 255, 0.1); 
 }
 
@@ -80,7 +74,6 @@ header .welcome {
 }
 
 header button {
-  /* A deeper, more serious crimson for destructive actions */
   background: #c0392b; 
   color: white;
   border: none;
@@ -92,7 +85,7 @@ header button {
 }
 
 header button:hover {
-  background: #a93226; /* Darken on hover */
+  background: #a93226;
 }
 
 /* Buttons */
@@ -101,14 +94,13 @@ button {
   border: 1px solid #bdc3c7;
   border-radius: 6px;
   background: #ecf0f1;
-  color: #2c3e50; /* Dark, slate-gray text */
+  color: #2c3e50;
   cursor: pointer;
   font-size: 14px;
   transition: all 0.3s;
 }
 
 button:hover:not(:disabled) {
-  /* Use the primary brand blue for main actions */
   background: #2d5580; 
   color: white;
   border-color: #2d5580;
@@ -121,7 +113,6 @@ button:disabled {
 
 /* Forms */
 form {
-  /* A very subtle off-white for the form area */
   background: #fdfdfd; 
   padding: 20px;
   border-radius: 8px;
@@ -138,7 +129,7 @@ label {
   display: block;
   margin-bottom: 5px;
   font-weight: 500;
-  color: #555; /* Slightly muted label text */
+  color: #555; 
 }
 
 input, select, textarea {
@@ -148,19 +139,17 @@ input, select, textarea {
   border-radius: 4px;
   font-size: 14px;
   transition: border-color 0.3s;
-  background: #fff; /* Ensure inputs are white */
+  background: #fff; 
 }
 
 input:focus, select:focus, textarea:focus {
   outline: none;
-  /* Focus with the primary brand blue */
   border-color: #2d5580; 
-  box-shadow: 0 0 5px rgba(45, 85, 128, 0.3); /* Matching shadow */
+  box-shadow: 0 0 5px rgba(45, 85, 128, 0.3); 
 }
 
 /* Error Messages */
 div[style*="color:#c00"] {
-  /* Use the same professional crimson for errors */
   color: #c0392b !important; 
   font-size: 12px;
   margin-top: 4px;
@@ -172,9 +161,9 @@ table {
   border-collapse: collapse;
   margin: 20px 0;
   background: white;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08); /* Soft shadow */
-  border-radius: 8px; /* Add rounded corners to the table */
-  overflow: hidden; /* Ensures radius is applied to cells */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  border-radius: 8px; 
+  overflow: hidden;
 }
 
 th, td {
@@ -186,19 +175,16 @@ th, td {
 th {
   background: #f8f8f8;
   font-weight: 600;
-  color: #2c3e50; /* Dark slate text for headers */
+  color: #2c3e50; 
 }
 
 tr:hover {
-  /* A very light, subtle blue for row hover */
   background: #f8faff; 
 }
 
-/* Cards/Sections */
 section {
   margin: 20px 0;
   padding: 20px;
-  /* Use white for a cleaner, card-based design */
   background: #ffffff; 
   border-radius: 8px;
   border: 1px solid #e1e1e1;
@@ -212,14 +198,13 @@ h2 {
 
 /* Links */
 a {
-  /* Use the primary brand blue for all links */
   color: #2d5580; 
   text-decoration: none;
   transition: color 0.3s;
 }
 
 a:hover {
-  color: #214061; /* Darken on hover */
+  color: #214061;
   text-decoration: underline;
 }
 
@@ -254,7 +239,6 @@ a:hover {
 }
 
 .pagination button.active {
-  /* Active state uses the primary brand blue */
   background: #2d5580; 
   color: white;
   border-color: #2d5580;
@@ -274,12 +258,10 @@ a:hover {
 }
 
 .toast.success {
-  /* A more muted, professional green */
   background: #3a876a; 
 }
 
 .toast.error {
-  /* Matching crimson for errors */
   background: #c0392b; 
 }
 
@@ -302,7 +284,6 @@ a:hover {
 
   header {
     padding: 10px;
-    /* Stack header items vertically on small screens */
     flex-direction: column;
     gap: 10px;
   }

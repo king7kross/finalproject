@@ -20,7 +20,7 @@ export class ProductsService {
 
   constructor(private http: HttpClient) { }
 
-  // -------- Products --------
+  // Products
   getProducts(query: ProductQuery): Observable<PagedResult<Product>> {
     let params = new HttpParams();
     if (query.page) params = params.set('page', query.page);
@@ -50,7 +50,7 @@ export class ProductsService {
     return this.http.delete(`${this.base}/${id}`);
   }
 
-  // -------- Reviews --------
+  //  Reviews
   getReviews(productId: number): Observable<Review[]> {
     return this.http.get<Review[]>(`${this.base}/${productId}/reviews`);
   }
