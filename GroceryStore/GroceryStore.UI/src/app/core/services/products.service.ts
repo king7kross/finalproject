@@ -37,7 +37,7 @@ export class ProductsService {
     return this.http.get<Product>(`${this.base}/${id}`);
   }
 
-  // Admin
+  // Admin services
   createProduct(productData: any) {
     return this.http.post(`${this.base}`, productData);
   }
