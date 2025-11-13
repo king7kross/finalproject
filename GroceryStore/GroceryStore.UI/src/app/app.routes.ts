@@ -16,12 +16,11 @@ export const routes: Routes = [
   // Admin (auth + admin)
   { path: 'admin', canActivate: [authGuard, adminGuard], loadComponent: () => import('./features/admin/products-list/admin-products-list.component').then(m => m.AdminProductsListComponent) },
 
-  // ✅ NEW: Admin Analytics
+  //  Admin Analytics
   { path: 'admin/analytics', canActivate: [authGuard, adminGuard], loadComponent: () => import('./features/admin/adminanalytics/admin-analytics.component').then(m => m.AdminAnalyticsComponent) },
 
   { path: 'product/:id', loadComponent: () => import('./features/catalog/product-detail/product-detail.component').then(m => m.ProductDetailComponent) },
 
-  // (you had duplicate admin routes in your file; keep only one set)
   { path: 'admin/add', canActivate: [authGuard, adminGuard], loadComponent: () => import('./features/admin/product-form/admin-product-form.component').then(m => m.AdminProductFormComponent) },
   { path: 'admin/edit/:id', canActivate: [authGuard, adminGuard], loadComponent: () => import('./features/admin/product-form/admin-product-form.component').then(m => m.AdminProductFormComponent) },
 

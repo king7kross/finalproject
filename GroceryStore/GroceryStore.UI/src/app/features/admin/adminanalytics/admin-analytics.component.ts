@@ -11,8 +11,12 @@ import { TopProduct } from '../../../shared/models/admin.models';
   templateUrl: './admin-analytics.component.html'
 })
 export class AdminAnalyticsComponent implements OnInit {
+
+  // Selected year and month
   year!: number;
   month!: number; // 1..12
+
+  // Dropdown options
   years: number[] = [];
   months = [
     { value: 1, label: 'January' }, { value: 2, label: 'February' },
@@ -23,28 +27,42 @@ export class AdminAnalyticsComponent implements OnInit {
     { value: 11, label: 'November' }, { value: 12, label: 'December' }
   ];
 
+  // Data returned from API
   data: TopProduct[] = [];
+
+  // Loading spinner control
   loading = false;
 
   constructor(private orders: OrdersService) { }
 
   ngOnInit(): void {
     const now = new Date();
-    this.year = now.getFullYear();
-    this.month = now.getMonth() + 1; // 1..12
 
-    // last 6 years (adjust if you want)
+    // Initialize with current year & month
+    this.year = now.getFullYear();
+    this.month = now.getMonth() + 1; // JS months are 0..11
+
+    // Build last 6 years for dropdown
     const latest = this.year;
     this.years = Array.from({ length: 6 }, (_, i) => latest - i);
 
+    // Load data initially
     this.fetch();
   }
 
   fetch(): void {
     this.loading = true;
+
+    // Call service to fetch top 5 products for selected month/year
     this.orders.getTopProducts(this.year, this.month, 5).subscribe({
-      next: rows => { this.data = rows; this.loading = false; },
-      error: _ => { this.data = []; this.loading = false; }
+      next: rows => {
+        this.data = rows;
+        this.loading = false;
+      },
+      error: () => {
+        this.data = [];
+        this.loading = false;
+      }
     });
   }
 }

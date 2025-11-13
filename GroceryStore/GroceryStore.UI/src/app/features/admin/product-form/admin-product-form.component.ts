@@ -1,4 +1,5 @@
 // src/app/features/admin/product-form/admin-product-form.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors, FormGroup } from '@angular/forms';
 import { ProductsService } from '../../../core/services/products.service';
@@ -7,9 +8,12 @@ import { NgIf } from '@angular/common';
 import { Product } from '../../../shared/models/product.models';
 
 
-// Validators that work on string inputs (HTML inputs yield strings)
+// Custom Validators 
+
+// Short alias for maxLength validator (string input)
 function maxLen(n: number) { return Validators.maxLength(n); }
 
+// Validates: required + non-negative number
 function nonNegNum(c: AbstractControl): ValidationErrors | null {
   const raw = (c.value ?? '').toString().trim();
   if (raw === '') return { required: true };
@@ -18,18 +22,21 @@ function nonNegNum(c: AbstractControl): ValidationErrors | null {
   return null;
 }
 
+// Validates: required + integer
 function integerOnly(c: AbstractControl): ValidationErrors | null {
   const raw = (c.value ?? '').toString().trim();
   if (raw === '') return { required: true };
   return /^\d+$/.test(raw) ? null : { integer: true };
 }
 
+// Validates: decimal with max 2 digits (optional field)
 function decimal2(c: AbstractControl): ValidationErrors | null {
   const raw = (c.value ?? '').toString().trim();
-  if (raw === '') return null; // optional field will add required if you need it
+  if (raw === '') return null; // optional — no required check here
   return /^\d+(\.\d{1,2})?$/.test(raw) ? null : { decimal2: true };
 }
 
+// Validates: non-negative + max 2 decimal places (optional)
 function nonNegDecimal2(c: AbstractControl): ValidationErrors | null {
   const raw = (c.value ?? '').toString().trim();
   if (raw === '') return null;
@@ -44,12 +51,20 @@ function nonNegDecimal2(c: AbstractControl): ValidationErrors | null {
   templateUrl: './admin-product-form.component.html'
 })
 export class AdminProductFormComponent implements OnInit {
+
+  // Whether editing an existing product
   isEdit = false;
+
+  // Disable button + show spinner state
   submitting = false;
+
+  // Product ID for edit mode
   currentId: number | null = null;
 
+  // Image preview
   preview: string | null = null;
 
+  // Main reactive form
   form!: FormGroup;
 
   constructor(
@@ -58,27 +73,47 @@ export class AdminProductFormComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router
   ) {
-    // ✅ Create the form INSIDE constructor so fb is available
+
+    // Build form immediately (constructor ensures fb is available)
     this.form = this.fb.group({
-      // treat inputs as strings; convert later
+
+      // All inputs treated as strings → converted later in buildProductData()
       name: ['', [Validators.required, maxLen(100)]],
       description: ['', [Validators.required, maxLen(255)]],
       category: ['', [Validators.required, maxLen(100)]],
+
+      // Quantity must be integer and non-negative
       availableQuantity: ['0', [integerOnly, nonNegNum]],
+
+      // Price must be required + valid decimal
       price: ['', [Validators.required, decimal2, nonNegDecimal2]],
-      discount: [''], // optional, validated by decimal2/nonNegDecimal2 only if filled
+
+      // Optional decimal field
+      discount: [''],
+
+      // Optional short text
       specification: ['', [maxLen(100)]],
-      imageUrl: ['', [Validators.required, Validators.pattern(/https?:\/\/.*\.(jpg|jpeg|png)$/i)]]
+
+      // Simple URL + image extension check
+      imageUrl: ['', [
+        Validators.required,
+        Validators.pattern(/https?:\/\/.*\.(jpg|jpeg|png)$/i)
+      ]]
     });
   }
 
+  // Shortcut helper for template bindings
   get f() { return this.form.controls as any; }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
+
+    // If ID exists → editing mode
     if (id) {
       this.isEdit = true;
       this.currentId = Number(id);
+
+      // Load product and populate form
       this.productsSvc.getProduct(this.currentId).subscribe({
         next: (p: Product) => {
           this.form.patchValue({
@@ -91,6 +126,8 @@ export class AdminProductFormComponent implements OnInit {
             specification: p.specification ?? '',
             imageUrl: p.imageUrl ?? ''
           });
+
+          // Set preview image
           this.preview = (p.imageUrl ?? null) as string | null;
         },
         error: _ => alert('Failed to load product.')
@@ -98,6 +135,7 @@ export class AdminProductFormComponent implements OnInit {
     }
   }
 
+  // Convert string-based form model → backend data model
   buildProductData(): any {
     const v = this.form.value as Record<string, string>;
 
@@ -105,28 +143,49 @@ export class AdminProductFormComponent implements OnInit {
       name: (v['name'] ?? '').toString(),
       description: (v['description'] ?? '').toString(),
       category: (v['category'] ?? '').toString(),
-      availableQuantity: parseInt((v['availableQuantity'] ?? '0').toString()),
-      price: parseFloat((v['price'] ?? '0').toString()),
-      discount: (v['discount'] ?? '').toString().trim() === '' ? null : parseFloat((v['discount'] ?? '0').toString()),
-      specification: (v['specification'] ?? '').toString().trim() === '' ? null : (v['specification'] ?? '').toString(),
+      availableQuantity: parseInt(v['availableQuantity'] ?? '0'),
+      price: parseFloat(v['price'] ?? '0'),
+
+      // discount/specification optional
+      discount: v['discount']?.trim() === '' ? null : parseFloat(v['discount']),
+      specification: v['specification']?.trim() === '' ? null : v['specification'],
+
       imageUrl: (v['imageUrl'] ?? '').toString()
     };
   }
 
+  // Create or update product
   onSubmit() {
     if (this.form.invalid) return;
+
     this.submitting = true;
     const productData = this.buildProductData();
 
     if (this.isEdit && this.currentId) {
+      // Update existing product
       this.productsSvc.updateProduct(this.currentId, productData).subscribe({
-        next: () => { this.submitting = false; alert('Saved.'); this.router.navigateByUrl('/admin'); },
-        error: _ => { this.submitting = false; alert('Save failed.'); }
+        next: () => {
+          this.submitting = false;
+          alert('Saved.');
+          this.router.navigateByUrl('/admin');
+        },
+        error: _ => {
+          this.submitting = false;
+          alert('Save failed.');
+        }
       });
     } else {
+      // Create new product
       this.productsSvc.createProduct(productData).subscribe({
-        next: () => { this.submitting = false; alert('Created.'); this.router.navigateByUrl('/admin'); },
-        error: _ => { this.submitting = false; alert('Create failed.'); }
+        next: () => {
+          this.submitting = false;
+          alert('Created.');
+          this.router.navigateByUrl('/admin');
+        },
+        error: _ => {
+          this.submitting = false;
+          alert('Create failed.');
+        }
       });
     }
   }

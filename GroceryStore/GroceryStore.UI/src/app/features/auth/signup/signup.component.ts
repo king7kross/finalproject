@@ -28,7 +28,6 @@ export class SignupComponent {
       email: ['', [Validators.required, emailValidator()]],
       phoneNumber: ['', [Validators.required, phoneValidator()]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      // ✅ Apply confirmMatch to *this control*, referencing the "password" control
       confirmPassword: ['', [Validators.required, confirmMatch('password')]]
     });
   }
@@ -51,7 +50,7 @@ export class SignupComponent {
     this.auth.signup(request).subscribe({
       next: res => {
         this.loading = false;
-        // ❌ No setUser here; user is NOT logged in after signup
+        //  No setUser here; user is NOT logged in after signup
         this.toast.success(res?.message || 'Account created. Please login.');
         this.router.navigateByUrl('/login');
       },

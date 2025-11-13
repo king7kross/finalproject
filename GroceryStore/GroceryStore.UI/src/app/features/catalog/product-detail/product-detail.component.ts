@@ -115,7 +115,7 @@ export class ProductDetailComponent implements OnInit {
   qty = 1;
   qtyOptions: number[] = [];
 
-  // ✅ spec lines to render as bullets
+  //  spec lines to render as bullets
   specLines: string[] = [];
 
   reviews: Review[] = [];
@@ -154,7 +154,7 @@ export class ProductDetailComponent implements OnInit {
         this.qtyOptions = Array.from({ length: max }, (_, i) => i + 1);
         this.qty = this.qtyOptions.length > 0 ? 1 : 0;
 
-        // ✅ split specification into bullet points (new line / semicolon / comma / •)
+        //  split specification into bullet points
         const raw = (p.specification ?? '').trim();
         this.specLines = raw
           ? raw.split(/[\r\n]+|;|,|•/).map(s => s.trim()).filter(Boolean)
