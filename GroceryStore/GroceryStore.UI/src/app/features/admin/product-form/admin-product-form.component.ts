@@ -136,23 +136,34 @@ export class AdminProductFormComponent implements OnInit {
   }
 
   // Convert string-based form model → backend data model
+  // Convert string-based form model → backend data model
   buildProductData(): any {
-    const v = this.form.value as Record<string, string>;
+    const v = this.form.value as Record<string, any>;
+
+    const discountRaw = v['discount'];
+    const discountStr =
+      discountRaw == null ? '' : String(discountRaw).trim();
 
     return {
       name: (v['name'] ?? '').toString(),
       description: (v['description'] ?? '').toString(),
       category: (v['category'] ?? '').toString(),
-      availableQuantity: parseInt(v['availableQuantity'] ?? '0'),
+      availableQuantity: parseInt(v['availableQuantity'] ?? '0', 10),
       price: parseFloat(v['price'] ?? '0'),
 
       // discount/specification optional
-      discount: v['discount']?.trim() === '' ? null : parseFloat(v['discount']),
-      specification: v['specification']?.trim() === '' ? null : v['specification'],
+      discount: discountStr === '' ? null : parseFloat(discountStr),
+
+      specification:
+        v['specification'] == null ||
+          String(v['specification']).trim() === ''
+          ? null
+          : String(v['specification']),
 
       imageUrl: (v['imageUrl'] ?? '').toString()
     };
   }
+
 
   // Create or update product
   onSubmit() {
