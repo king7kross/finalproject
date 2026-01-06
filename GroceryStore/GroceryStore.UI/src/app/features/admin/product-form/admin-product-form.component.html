@@ -1,84 +1,92 @@
-<h2>{{ isEdit ? 'Edit Product' : 'Add Product' }}</h2>
-<a routerLink="/admin">← Back</a>
+<h2 class="page-title">{{ isEdit ? 'Edit Product' : 'Add Product' }}</h2>
+<a class="back-link" routerLink="/admin">← Back</a>
 
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div>
-    <label> Product Name</label><br>
-    <input formControlName="name" maxlength="100" required />
-    <div *ngIf="f.name.touched && f.name.errors" style="color:#c00; font-size:12px;">
+<form class="form-card" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="field">
+    <label class="label">Product Name</label>
+    <input class="input" formControlName="name" maxlength="100" required />
+    <div *ngIf="f.name.touched && f.name.errors" class="error">
       <div *ngIf="f.name.errors['required']">Name is required.</div>
       <div *ngIf="f.name.errors['maxlength']">Max 100 characters.</div>
     </div>
   </div>
 
-  <div>
-    <label>Description</label><br>
-    <textarea formControlName="description" rows="3" maxlength="255" required></textarea>
-    <div *ngIf="f.description.touched && f.description.errors" style="color:#c00; font-size:12px;">
+  <div class="field">
+    <label class="label">Description</label>
+    <textarea class="textarea" formControlName="description" rows="3" maxlength="255" required></textarea>
+    <div *ngIf="f.description.touched && f.description.errors" class="error">
       <div *ngIf="f.description.errors['required']">Description is required.</div>
       <div *ngIf="f.description.errors['maxlength']">Max 255 characters.</div>
     </div>
   </div>
 
-  <div>
-    <label>Category</label><br>
-    <input formControlName="category"  maxlength="100" required />
-    <div *ngIf="f.category.touched && f.category.errors" style="color:#c00; font-size:12px;">
+  <div class="field">
+    <label class="label">Category</label>
+    <input class="input" formControlName="category" maxlength="100" required />
+    <div *ngIf="f.category.touched && f.category.errors" class="error">
       <div *ngIf="f.category.errors['required']">Category is required.</div>
       <div *ngIf="f.category.errors['maxlength']">Max 100 characters.</div>
     </div>
   </div>
 
-  <div>
-    <label>Available Quantity</label><br>
-    <input formControlName="availableQuantity" type="number" required/>
-    <div *ngIf="f.availableQuantity.touched && f.availableQuantity.errors" style="color:#c00; font-size:12px;">
+  <div class="field">
+    <label class="label">Available Quantity</label>
+    <input class="input" formControlName="availableQuantity" type="number" required />
+    <div *ngIf="f.availableQuantity.touched && f.availableQuantity.errors" class="error">
       <div *ngIf="f.availableQuantity.errors['required']">Quantity is required.</div>
       <div *ngIf="f.availableQuantity.errors['integer']">Must be a whole number.</div>
       <div *ngIf="f.availableQuantity.errors['nonNegative']">Must be ≥ 0.</div>
     </div>
   </div>
 
-  <div>
-    <label>Price</label><br>
-    <input formControlName="price" required />
-    <div *ngIf="f.price.touched && f.price.errors" style="color:#c00; font-size:12px;">
+  <div class="field">
+    <label class="label">Price</label>
+    <input class="input" formControlName="price" required />
+    <div *ngIf="f.price.touched && f.price.errors" class="error">
       <div *ngIf="f.price.errors['required']">Price is required.</div>
       <div *ngIf="f.price.errors['decimal2']">Decimals up to 2 places.</div>
       <div *ngIf="f.price.errors['nonNegative']">Must be ≥ 0.</div>
     </div>
   </div>
 
-  <div>
-    <label>Discount (optional)</label><br>
-    <input formControlName="discount" type="number" />
-    <div *ngIf="f.discount.touched && f.discount.errors" style="color:#c00; font-size:12px;">
+  <div class="field">
+    <label class="label">Discount (optional)</label>
+    <input class="input" formControlName="discount" type="number" />
+    <div *ngIf="f.discount.touched && f.discount.errors" class="error">
       <div *ngIf="f.discount.errors['decimal2']">Decimals up to 2 places.</div>
       <div *ngIf="f.discount.errors['nonNegative']">Must be ≥ 0.</div>
     </div>
   </div>
 
-  <div>
-    <label>Specification (optional)</label><br>
-    <input formControlName="specification" />
-    <div *ngIf="f.specification.touched && f.specification.errors" style="color:#c00; font-size:12px;">
+  <div class="field">
+    <label class="label">Specification (optional)</label>
+    <input class="input" formControlName="specification" />
+    <div *ngIf="f.specification.touched && f.specification.errors" class="error">
       <div *ngIf="f.specification.errors['maxlength']">Max 100 characters.</div>
     </div>
   </div>
 
-  <div>
-    <label>Image URL (JPG/PNG)</label><br>
-    <input formControlName="imageUrl" placeholder="https://m.media-amazon.com/images/I/41AWXqhnJ8L._SX679_.jpg" required />
-    <div *ngIf="f.imageUrl.touched && f.imageUrl.errors" style="color:#c00; font-size:12px;">
+  <div class="field">
+    <label class="label">Image URL (JPG/PNG)</label>
+    <input
+      class="input"
+      formControlName="imageUrl"
+      placeholder="https://m.media-amazon.com/images/I/41AWXqhnJ8L._SX679_.jpg"
+      required
+    />
+    <div *ngIf="f.imageUrl.touched && f.imageUrl.errors" class="error">
       <div *ngIf="f.imageUrl.errors['required']">Image URL is required.</div>
       <div *ngIf="f.imageUrl.errors['pattern']">Must be a valid JPG or PNG URL.</div>
     </div>
-    <div *ngIf="preview" style="margin-top:6px;">
-      <img [src]="preview" alt="" style="max-width:160px; border:1px solid #eee;">
+
+    <div *ngIf="preview" class="preview">
+      <img class="preview-img" [src]="preview" alt="" />
     </div>
   </div>
 
-  <div>
-    <button [disabled]="submitting || form.invalid">{{ isEdit ? 'Save' : 'Create' }}</button>
+  <div class="actions">
+    <button class="btn btn-primary" [disabled]="submitting || form.invalid">
+      {{ isEdit ? 'Save' : 'Create' }}
+    </button>
   </div>
 </form>

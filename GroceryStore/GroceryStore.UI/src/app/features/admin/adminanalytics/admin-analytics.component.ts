@@ -8,7 +8,8 @@ import { TopProduct } from '../../../shared/models/admin.models';
   standalone: true,
   selector: 'app-admin-analytics',
   imports: [CommonModule, FormsModule, NgIf, NgFor],
-  templateUrl: './admin-analytics.component.html'
+  templateUrl: './admin-analytics.component.html',
+  styleUrl: './admin-analytics.component.css'
 })
 export class AdminAnalyticsComponent implements OnInit {
 

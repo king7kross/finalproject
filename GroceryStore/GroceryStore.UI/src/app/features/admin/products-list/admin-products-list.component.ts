@@ -9,7 +9,8 @@ import { RouterLink } from '@angular/router';
 @Component({
   standalone: true,
   imports: [NgIf, NgFor, CurrencyPipe, RouterLink],
-  templateUrl: './admin-products-list.component.html'
+  templateUrl: './admin-products-list.component.html',
+  styleUrl: './admin-products-list.component.css'
 })
 export class AdminProductsListComponent implements OnInit {
 

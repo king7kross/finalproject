@@ -8,7 +8,8 @@ import { RouterLink } from '@angular/router';
   selector: 'gs-product-card',
   standalone: true,
   imports: [CurrencyPipe, RouterLink, NgIf],
-  templateUrl: './product-card.component.html'
+  templateUrl: './product-card.component.html',
+  styleUrl: './product-card.component.css'
 })
 export class ProductCardComponent {
   @Input() product!: Product;

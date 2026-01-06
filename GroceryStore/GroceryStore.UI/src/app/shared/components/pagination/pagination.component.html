@@ -1,5 +1,5 @@
-<div *ngIf="totalCount > pageSize" style="display:flex; gap:8px; align-items:center; justify-content:center; margin-top:12px;">
-  <button (click)="prev()" [disabled]="page <= 1">Prev</button>
-  <span>Page {{ page }} / {{ totalPages }}</span>
-  <button (click)="next()" [disabled]="page >= totalPages">Next</button>
+<div *ngIf="totalCount > pageSize" class="pager">
+  <button class="pager-btn" (click)="prev()" [disabled]="page <= 1">Prev</button>
+  <span class="pager-info">Page <strong>{{ page }}</strong> / {{ totalPages }}</span>
+  <button class="pager-btn" (click)="next()" [disabled]="page >= totalPages">Next</button>
 </div>

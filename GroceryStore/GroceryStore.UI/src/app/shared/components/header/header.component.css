@@ -1,0 +1,123 @@
+:host {
+  display: block;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* Header shell */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #eef2f7;
+}
+
+/* Brand */
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  text-decoration: none;
+  color: #111827;
+  font-weight: 950;
+  letter-spacing: 0.2px;
+  font-size: 18px;
+}
+
+.logo::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #1faa59;
+  box-shadow: 0 0 0 4px rgba(31, 170, 89, 0.14);
+}
+
+/* Nav */
+nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Welcome */
+.welcome {
+  color: #6b7280;
+  font-weight: 800;
+  margin-right: 6px;
+  white-space: nowrap;
+}
+
+/* Links */
+nav a {
+  text-decoration: none;
+  color: #111827;
+  font-weight: 850;
+  font-size: 14px;
+
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+
+  transition: background 160ms ease, border-color 160ms ease, transform 120ms ease;
+}
+
+nav a:hover {
+  background: rgba(31, 170, 89, 0.08);
+  border-color: rgba(31, 170, 89, 0.20);
+}
+
+nav a:active {
+  transform: translateY(1px);
+}
+
+/* Sign-out button */
+nav button {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(180, 35, 24, 0.22);
+  background: #ffffff;
+  color: #b42318;
+  font-weight: 950;
+  cursor: pointer;
+
+  transition: background 160ms ease, transform 120ms ease, opacity 160ms ease;
+}
+
+nav button:hover {
+  background: rgba(180, 35, 24, 0.06);
+}
+
+nav button:active {
+  transform: translateY(1px);
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  nav {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .welcome {
+    width: 100%;
+    margin: 0;
+  }
+}

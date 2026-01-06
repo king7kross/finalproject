@@ -1,22 +1,35 @@
-<h2>My Orders</h2>
+<h2 class="page-title">My Orders</h2>
 
-<section *ngIf="loading">Loading...</section>
-<section *ngIf="!loading && orders.length === 0">No orders yet.</section>
+<section *ngIf="loading" class="state">
+  <span class="dot"></span> Loading...
+</section>
 
-<section *ngIf="!loading && orders.length > 0" style="display:flex; flex-direction:column; gap:12px;">
-  <article *ngFor="let o of orders" style="border:1px solid #eee; border-radius:8px; padding:12px;">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <div><strong>Order #{{ o.orderNumber }}</strong></div>
-      <div style="font-size:12px; color:#666;">{{ o.createdAt | date:'medium' }}</div>
+<section *ngIf="!loading && orders.length === 0" class="state muted">
+  No orders yet.
+</section>
+
+<section *ngIf="!loading && orders.length > 0" class="orders">
+  <article *ngFor="let o of orders" class="order-card">
+    <div class="order-head">
+      <div class="order-number">
+        <strong>Order #{{ o.orderNumber }}</strong>
+      </div>
+      <div class="order-date">{{ o.createdAt | date:'medium' }}</div>
     </div>
-    <ul style="margin:8px 0 0 16px;">
-      <li *ngFor="let it of o.items">
-        {{ it.productName }} × {{ it.quantity }} —
-        {{ (it.unitPrice - (it.discountAtPurchase || 0)) * it.quantity | currency:'INR':'symbol' }}
+
+    <ul class="items">
+      <li *ngFor="let it of o.items" class="item">
+        <span class="item-name">{{ it.productName }}</span>
+        <span class="item-mult">× {{ it.quantity }}</span>
+        <span class="item-price mono">
+          {{ (it.unitPrice - (it.discountAtPurchase || 0)) * it.quantity | currency:'INR':'symbol' }}
+        </span>
       </li>
     </ul>
-    <div style="margin-top:8px; text-align:right;">
-      <strong>Total: {{ o.total | currency:'INR':'symbol' }}</strong>
+
+    <div class="order-total">
+      <span class="total-label">Total</span>
+      <strong class="total-value mono">{{ o.total | currency:'INR':'symbol' }}</strong>
     </div>
   </article>
 </section>

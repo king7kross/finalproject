@@ -7,7 +7,8 @@ import { DatePipe, CurrencyPipe, NgFor, NgIf } from '@angular/common';
 @Component({
   standalone: true,
   imports: [NgIf, NgFor, DatePipe, CurrencyPipe],
-  templateUrl: './my-orders.component.html'
+  templateUrl: './my-orders.component.html',
+  styleUrl: './my-orders.component.css'
 })
 export class MyOrdersComponent implements OnInit {
   orders: OrderDto[] = [];

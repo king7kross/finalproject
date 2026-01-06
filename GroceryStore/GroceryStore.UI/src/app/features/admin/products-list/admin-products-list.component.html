@@ -1,40 +1,44 @@
-<h2>Admin - Products</h2>
+<h2 class="page-title">Admin - Products</h2>
 
-<div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px;">
-  <div class="add-product-button">
-    <a routerLink="/admin/add">+ Add Product</a>
+<div class="topbar">
+  <div class="topbar-left">
+    <a class="btn btn-primary" routerLink="/admin/add">+ Add Product</a>
   </div>
 
-  <!-- View Analytics button -->
-  <div>
-    <a routerLink="/admin/analytics"> View Analytics</a>
+  <div class="topbar-right">
+    <a class="btn btn-ghost" routerLink="/admin/analytics">View Analytics</a>
   </div>
 </div>
 
-<section *ngIf="loading">Loading...</section>
-<section *ngIf="!loading && list?.items?.length === 0">No products.</section>
+<section *ngIf="loading" class="state">Loading...</section>
+<section *ngIf="!loading && list?.items?.length === 0" class="state muted">No products.</section>
 
-<table *ngIf="!loading && list?.items?.length" class="products-table">
-  <thead>
-    <tr class="header-row">
-      <th>Name</th>
-      <th>Category</th>
-      <th>Price</th>
-      <th>Qty</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let p of list!.items" class="data-row">
-      <td>{{ p.name }}</td>
-      <td>{{ p.category }}</td>
-      <td>{{ p.price | currency:'INR':'symbol' }}</td>
-      <td>{{ p.availableQuantity }}</td>
-      <td class="action-cell">
-        <a [routerLink]="['/admin/edit', p.id]">Edit</a>
-        &nbsp;|&nbsp;
-        <a href="" (click)="onDelete(p.id); $event.preventDefault();">Delete</a>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<div *ngIf="!loading && list?.items?.length" class="table-card">
+  <table class="products-table">
+    <thead>
+      <tr class="header-row">
+        <th>Name</th>
+        <th>Category</th>
+        <th class="right">Price</th>
+        <th class="right">Qty</th>
+        <th class="right">Action</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let p of list!.items" class="data-row">
+        <td class="name-cell">{{ p.name }}</td>
+        <td>
+          <span class="chip">{{ p.category }}</span>
+        </td>
+        <td class="right">{{ p.price | currency:'INR':'symbol' }}</td>
+        <td class="right">{{ p.availableQuantity }}</td>
+        <td class="action-cell right">
+          <a class="link" [routerLink]="['/admin/edit', p.id]">Edit</a>
+          <span class="sep">|</span>
+          <a class="link danger" href="" (click)="onDelete(p.id); $event.preventDefault();">Delete</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

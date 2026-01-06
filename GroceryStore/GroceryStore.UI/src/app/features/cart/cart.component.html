@@ -1,52 +1,73 @@
-<h2>Cart</h2>
+<h2 class="page-title">Cart</h2>
 
-<section *ngIf="loading">Loading...</section>
+<section *ngIf="loading" class="state">Loading...</section>
 
-<section *ngIf="!loading && (!cart || cart.items.length === 0)" style="padding:12px; border:1px dashed #ccc;">
+<section *ngIf="!loading && (!cart || cart.items.length === 0)" class="empty-card">
   <strong>No Items in Cart</strong>
 </section>
 
 <section *ngIf="!loading && cart && cart.items.length > 0">
-  <table style="width:100%; border-collapse:collapse;">
-    <thead>
-      <tr style="text-align:left; border-bottom:1px solid #eee;">
-        <th style="padding:8px;">Product</th>
-        <th style="padding:8px;">Price</th>
-        <th style="padding:8px;">Discount</th>
-        <th style="padding:8px;">Qty</th>
-        <th style="padding:8px;">Subtotal</th>
-        <th style="padding:8px;">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let it of cart!.items" style="border-bottom:1px solid #f2f2f2;">
-        <td style="padding:8px;">
-          <div style="display:flex; gap:8px; align-items:center;">
-            <img *ngIf="it.productImageUrl" [src]="it.productImageUrl" alt="" style="width:48px; height:48px; object-fit:cover; border:1px solid #eee;">
-            <div>
-              <div style="font-weight:600;">{{ it.productName }}</div>
-              <div style="font-size:12px; color:#888;">Available: {{ it.availableQuantity }}</div>
-            </div>
-          </div>
-        </td>
-        <td style="padding:8px;">{{ it.price | currency:'INR':'symbol' }}</td>
-        <td style="padding:8px;">{{ (it.discount || 0) | currency:'INR':'symbol' }}</td>
-        <td style="padding:8px; white-space:nowrap;">
-          <select [(ngModel)]="it.quantity" (ngModelChange)="onQtyChange(it)" [disabled]="updatingId === it.id">
-            <option *ngFor="let n of qtyOptions(it)" [value]="n">{{ n }}</option>
-          </select>
-        </td>
-        <td style="padding:8px;">
-          {{ (it.price - (it.discount || 0)) * it.quantity | currency:'INR':'symbol' }}
-        </td>
-        <td style="padding:8px;">
-          <button (click)="remove(it)" [disabled]="updatingId === it.id">Remove</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-card">
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th class="right">Price</th>
+          <th class="right">Discount</th>
+          <th class="center">Qty</th>
+          <th class="right">Subtotal</th>
+          <th class="right">Action</th>
+        </tr>
+      </thead>
 
-  <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:12px;">
-    <button (click)="placeOrder()" [disabled]="placing">Place Order</button>
+      <tbody>
+        <tr *ngFor="let it of cart!.items">
+          <td>
+            <div class="product">
+              <img
+                *ngIf="it.productImageUrl"
+                [src]="it.productImageUrl"
+                alt=""
+                class="product-img"
+              />
+              <div class="product-meta">
+                <div class="product-name">{{ it.productName }}</div>
+                <div class="product-sub">Available: {{ it.availableQuantity }}</div>
+              </div>
+            </div>
+          </td>
+
+          <td class="right mono">{{ it.price | currency:'INR':'symbol' }}</td>
+          <td class="right mono">{{ (it.discount || 0) | currency:'INR':'symbol' }}</td>
+
+          <td class="center">
+            <select
+              class="select"
+              [(ngModel)]="it.quantity"
+              (ngModelChange)="onQtyChange(it)"
+              [disabled]="updatingId === it.id"
+            >
+              <option *ngFor="let n of qtyOptions(it)" [value]="n">{{ n }}</option>
+            </select>
+          </td>
+
+          <td class="right mono">
+            {{ (it.price - (it.discount || 0)) * it.quantity | currency:'INR':'symbol' }}
+          </td>
+
+          <td class="right">
+            <button class="btn btn-ghost danger" (click)="remove(it)" [disabled]="updatingId === it.id">
+              Remove
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cart-actions">
+    <button class="btn btn-primary" (click)="placeOrder()" [disabled]="placing">
+      Place Order
+    </button>
   </div>
 </section>

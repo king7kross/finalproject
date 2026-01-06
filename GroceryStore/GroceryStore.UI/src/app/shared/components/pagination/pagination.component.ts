@@ -6,7 +6,8 @@ import { NgIf } from '@angular/common';
   selector: 'gs-pagination',
   standalone: true,
   imports: [NgIf],
-  templateUrl: './pagination.component.html'
+  templateUrl: './pagination.component.html',
+  styleUrl: './pagination.component.css'
 })
 export class PaginationComponent {
   @Input() page = 1;

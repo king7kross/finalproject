@@ -9,7 +9,8 @@ import { AsyncPipe, NgIf } from '@angular/common';
   selector: 'gs-header',
   standalone: true,
   imports: [RouterLink, AsyncPipe, NgIf],
-  templateUrl: './header.component.html'
+  templateUrl: './header.component.html',
+  styleUrl: './header.component.css'
 })
 export class HeaderComponent implements OnInit {
   constructor(

@@ -13,100 +13,529 @@ import { Observable } from 'rxjs';
   standalone: true,
   imports: [CommonModule, RouterLink, NgIf, NgFor, CurrencyPipe, DatePipe, FormsModule],
   template: `
-    <a routerLink="/" style="display:inline-block; margin-bottom:12px;">← Back</a>
+    <a routerLink="/" class="back-link">← Back</a>
 
-    <section *ngIf="loading">Loading...</section>
-    <section *ngIf="!loading && !product">Product not found.</section>
+    <section *ngIf="loading" class="state">
+      <span class="dot"></span> Loading...
+    </section>
 
-    <section *ngIf="product" style="display:grid; gap:16px; grid-template-columns: 1fr 1.5fr;">
-      <div style="background:#fafafa; border:1px solid #eee; border-radius:8px; min-height:260px; display:flex; align-items:center; justify-content:center;">
-        <img *ngIf="product!.imageUrl" [src]="product!.imageUrl!" alt="{{product!.name}}" style="max-width:100%; max-height:240px;">
-        <span *ngIf="!product!.imageUrl" style="color:#888;">No Image</span>
+    <section *ngIf="!loading && !product" class="state muted">
+      Product not found.
+    </section>
+
+    <section *ngIf="product" class="layout">
+      <!-- Image -->
+      <div class="media">
+        <img *ngIf="product!.imageUrl" [src]="product!.imageUrl!" alt="{{product!.name}}" class="media-img">
+        <div *ngIf="!product!.imageUrl" class="media-empty">No Image</div>
       </div>
 
-      <div>
-        <h2 style="margin:0 0 8px 0;">{{ product!.name }}</h2>
-        <div style="color:#666; margin-bottom:8px;">Category: {{ product!.category }}</div>
-        <p style="margin-top:0;">{{ product!.description }}</p>
+      <!-- Details -->
+      <div class="details">
+        <h2 class="name">{{ product!.name }}</h2>
+        <div class="meta">
+          <span class="chip">Category: {{ product!.category }}</span>
+        </div>
 
-        <!-- ✅ Specifications block -->
-        <div *ngIf="specLines.length > 0" style="margin:12px 0;">
-          <h3 style="margin:0 0 6px 0; font-size:16px;">Specifications</h3>
-          <ul style="margin:0; padding-left:18px;">
+        <p class="desc">{{ product!.description }}</p>
+
+        <!-- Specifications -->
+        <div *ngIf="specLines.length > 0" class="spec">
+          <h3 class="section-title">Specifications</h3>
+          <ul class="spec-list">
             <li *ngFor="let s of specLines">{{ s }}</li>
           </ul>
         </div>
 
-        <div style="display:flex; align-items:baseline; gap:8px; margin:12px 0;">
-          <span style="font-size:18px;">{{ (product!.price - (product!.discount || 0)) | currency:'INR':'symbol' }}</span>
-          <span *ngIf="product!.discount && product!.discount! > 0" style="font-size:13px; color:#0a7; text-decoration:line-through;">
+        <!-- Price -->
+        <div class="price-row">
+          <span class="price">
+            {{ (product!.price - (product!.discount || 0)) | currency:'INR':'symbol' }}
+          </span>
+
+          <span *ngIf="product!.discount && product!.discount! > 0" class="mrp">
             {{ product!.price | currency:'INR':'symbol' }}
+          </span>
+
+          <span *ngIf="product!.discount && product!.discount! > 0" class="badge">
+            Save {{ (product!.discount || 0) | currency:'INR':'symbol' }}
           </span>
         </div>
 
-        <div *ngIf="product!.availableQuantity > 0; else out" style="display:flex; gap:8px; align-items:center; margin-top:8px;">
-          <label for="qty">Qty:</label>
-          <select id="qty" [(ngModel)]="qty" style="padding:6px;">
+        <!-- Add to cart / Out of stock -->
+        <div *ngIf="product!.availableQuantity > 0; else out" class="buy">
+          <label class="qty-label" for="qty">Qty</label>
+          <select id="qty" [(ngModel)]="qty" class="select">
             <option *ngFor="let n of qtyOptions" [value]="n">{{ n }}</option>
           </select>
-          <button (click)="addToCart()" style="padding:6px 10px;">Add to Cart</button>
+
+          <button (click)="addToCart()" class="btn btn-primary">
+            Add to Cart
+          </button>
+
+          <div class="stock">
+            In stock: <strong>{{ product!.availableQuantity }}</strong>
+          </div>
         </div>
 
         <ng-template #out>
-          <div style="margin-top:8px; color:#c00; font-weight:600;">Out of Stock</div>
+          <div class="out">Out of Stock</div>
         </ng-template>
       </div>
     </section>
 
     <!-- Reviews -->
-    <section *ngIf="product" style="margin-top:24px;">
-      <h3 style="margin:0 0 8px 0;">Reviews</h3>
+    <section *ngIf="product" class="reviews">
+      <h3 class="reviews-title">Reviews</h3>
 
-      <div *ngIf="reviewsLoading">Loading reviews...</div>
-      <div *ngIf="!reviewsLoading && reviews.length === 0" style="color:#666;">No reviews yet. Be the first to review!</div>
+      <div *ngIf="reviewsLoading" class="state small">
+        <span class="dot"></span> Loading reviews...
+      </div>
 
-      <ul *ngIf="!reviewsLoading && reviews.length > 0" style="list-style:none; padding-left:0; display:flex; flex-direction:column; gap:8px;">
-        <li *ngFor="let r of reviews" style="border:1px solid #eee; border-radius:8px; padding:10px;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong>{{ r.userName || 'User' }}</strong>
-            <small style="color:#666;">{{ r.createdAt | date:'medium' }}</small>
+      <div *ngIf="!reviewsLoading && reviews.length === 0" class="state muted">
+        No reviews yet. Be the first to review!
+      </div>
+
+      <ul *ngIf="!reviewsLoading && reviews.length > 0" class="review-list">
+        <li *ngFor="let r of reviews" class="review-card">
+          <div class="review-head">
+            <strong class="review-user">{{ r.userName || 'User' }}</strong>
+            <small class="review-date">{{ r.createdAt | date:'medium' }}</small>
           </div>
-          <div style="margin:4px 0;">
+
+          <div class="stars" aria-label="Rating">
             <span *ngFor="let s of [1,2,3,4,5]">
-              <span [style.color]="s <= r.rating ? '#fa0' : '#ccc'">★</span>
+              <span class="star" [class.on]="s <= r.rating">★</span>
             </span>
           </div>
-          <div>{{ r.comment }}</div>
+
+          <div class="review-text">{{ r.comment }}</div>
         </li>
       </ul>
 
-      <!-- Write a review (only when logged in) -->
-      <div *ngIf="(isLoggedIn$ | async)" style="margin-top:16px; border:1px solid #eee; border-radius:8px; padding:12px;">
-        <h4 style="margin:0 0 8px 0;">Write a review</h4>
+      <!-- Write a review -->
+      <div *ngIf="(isLoggedIn$ | async)" class="write-card">
+        <h4 class="write-title">Write a review</h4>
+
         <form (ngSubmit)="submitReview()" #reviewForm="ngForm">
-          <label>Rating:</label>
-          <select [(ngModel)]="newReview.rating" name="rating" required>
-            <option [value]="5">5</option>
-            <option [value]="4">4</option>
-            <option [value]="3">3</option>
-            <option [value]="2">2</option>
-            <option [value]="1">1</option>
-          </select>
-          <br />
-          <label>Comment:</label>
-          <textarea [(ngModel)]="newReview.comment" name="comment" rows="3" maxlength="500" required style="width:100%;"></textarea>
-          <div style="margin-top:8px;">
-            <button type="submit" [disabled]="postingReview || !newReview.comment || !newReview.rating">Post Review</button>
-            <span *ngIf="postingReview" style="margin-left:8px;">Posting...</span>
+          <div class="write-grid">
+            <div class="field small">
+              <label class="label">Rating</label>
+              <select [(ngModel)]="newReview.rating" name="rating" required class="select">
+                <option [value]="5">5</option>
+                <option [value]="4">4</option>
+                <option [value]="3">3</option>
+                <option [value]="2">2</option>
+                <option [value]="1">1</option>
+              </select>
+            </div>
+
+            <div class="field wide">
+              <label class="label">Comment</label>
+              <textarea
+                [(ngModel)]="newReview.comment"
+                name="comment"
+                rows="3"
+                maxlength="500"
+                required
+                class="textarea"
+                placeholder="Share your experience…">
+              </textarea>
+            </div>
+          </div>
+
+          <div class="write-actions">
+            <button type="submit" class="btn btn-primary" [disabled]="postingReview || !newReview.comment || !newReview.rating">
+              Post Review
+            </button>
+            <span *ngIf="postingReview" class="posting">Posting...</span>
           </div>
         </form>
       </div>
 
-      <div *ngIf="!(isLoggedIn$ | async)" style="margin-top:12px; color:#666;">
+      <div *ngIf="!(isLoggedIn$ | async)" class="login-hint">
         <em>Please login to write a review.</em>
       </div>
     </section>
-  `
+  `,
+  styles: [`
+    :host {
+      display: block;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: #111827;
+    }
+
+    .back-link {
+      display: inline-flex;
+      margin-bottom: 12px;
+      color: #1faa59;
+      font-weight: 900;
+      text-decoration: none;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 900px) {
+      .layout { grid-template-columns: 1fr 1.5fr; }
+    }
+
+    /* Media */
+    .media {
+      border-radius: 18px;
+      border: 1px solid #eef2f7;
+      background: #ffffff;
+      box-shadow: 0 10px 24px rgba(17, 24, 39, 0.06);
+      min-height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .media-img {
+      max-width: 100%;
+      max-height: 320px;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      padding: 12px;
+      background: #fafafa;
+    }
+
+    .media-empty {
+      color: #6b7280;
+      font-weight: 700;
+      padding: 12px;
+    }
+
+    /* Details */
+    .details {
+      border-radius: 18px;
+      border: 1px solid #eef2f7;
+      background: #ffffff;
+      box-shadow: 0 10px 24px rgba(17, 24, 39, 0.06);
+      padding: 16px;
+    }
+
+    .name {
+      margin: 0 0 8px 0;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 0.2px;
+    }
+
+    .meta { margin-bottom: 10px; }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      height: 28px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: rgba(31, 170, 89, 0.12);
+      color: #117a3d;
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    .desc {
+      margin: 0;
+      color: #374151;
+      line-height: 1.5;
+      font-weight: 600;
+    }
+
+    .spec {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .section-title {
+      margin: 0 0 8px 0;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.1px;
+    }
+
+    .spec-list {
+      margin: 0;
+      padding-left: 18px;
+      color: #374151;
+      font-weight: 600;
+    }
+
+    /* Price */
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .price {
+      font-size: 22px;
+      font-weight: 950;
+      letter-spacing: 0.2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .mrp {
+      font-size: 13px;
+      color: #6b7280;
+      text-decoration: line-through;
+      font-weight: 800;
+    }
+
+    .badge {
+      font-size: 12px;
+      font-weight: 900;
+      color: #0f5132;
+      background: rgba(34, 197, 94, 0.14);
+      border: 1px solid rgba(34, 197, 94, 0.18);
+      border-radius: 999px;
+      padding: 5px 10px;
+    }
+
+    /* Buy row */
+    .buy {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .qty-label {
+      font-weight: 900;
+      color: #374151;
+    }
+
+    .stock {
+      color: #6b7280;
+      font-weight: 700;
+      margin-left: auto;
+    }
+
+    .out {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(180, 35, 24, 0.25);
+      background: rgba(180, 35, 24, 0.06);
+      color: #b42318;
+      font-weight: 950;
+      display: inline-block;
+    }
+
+    /* Controls */
+    .select, .textarea {
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #fbfdff;
+      color: #111827;
+      outline: none;
+      transition: box-shadow 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .select {
+      height: 40px;
+      padding: 0 12px;
+      min-width: 86px;
+    }
+
+    .textarea {
+      width: 100%;
+      padding: 10px 12px;
+      resize: vertical;
+      min-height: 92px;
+    }
+
+    .select:focus, .textarea:focus {
+      border-color: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
+      background: #ffffff;
+    }
+
+    /* Buttons */
+    .btn {
+      height: 40px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      font-weight: 950;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 120ms ease, box-shadow 160ms ease, opacity 160ms ease;
+    }
+    .btn:active { transform: translateY(1px); }
+
+    .btn-primary {
+      background: #1faa59;
+      color: #ffffff;
+      box-shadow: 0 12px 22px rgba(31, 170, 89, 0.18);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 16px 28px rgba(31, 170, 89, 0.24);
+    }
+    .btn[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Reviews */
+    .reviews {
+      margin-top: 22px;
+    }
+
+    .reviews-title {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      font-weight: 950;
+    }
+
+    .review-list {
+      list-style: none;
+      padding-left: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 0;
+    }
+
+    .review-card {
+      border: 1px solid #eef2f7;
+      border-radius: 16px;
+      padding: 12px;
+      background: #ffffff;
+      box-shadow: 0 10px 24px rgba(17, 24, 39, 0.06);
+    }
+
+    .review-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .review-user {
+      font-weight: 950;
+      color: #111827;
+    }
+
+    .review-date {
+      color: #6b7280;
+      font-weight: 700;
+    }
+
+    .stars { margin: 6px 0 8px 0; }
+
+    .star {
+      color: #d1d5db;
+      font-size: 16px;
+      line-height: 1;
+    }
+    .star.on { color: #f59e0b; }
+
+    .review-text {
+      color: #374151;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    /* Write review card */
+    .write-card {
+      margin-top: 14px;
+      border: 1px solid #eef2f7;
+      border-radius: 18px;
+      padding: 14px;
+      background: #ffffff;
+      box-shadow: 0 10px 24px rgba(17, 24, 39, 0.06);
+    }
+
+    .write-title {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      font-weight: 950;
+    }
+
+    .write-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 820px) {
+      .write-grid {
+        grid-template-columns: 180px 1fr;
+      }
+      .field.small { max-width: 200px; }
+    }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .label {
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+    }
+
+    .write-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .posting {
+      color: #6b7280;
+      font-weight: 800;
+    }
+
+    .login-hint {
+      margin-top: 12px;
+      color: #6b7280;
+      font-weight: 650;
+    }
+
+    /* States */
+    .state {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px dashed #e5e7eb;
+      background: #fafafa;
+      color: #374151;
+      font-weight: 800;
+    }
+    .state.small { padding: 10px 12px; font-weight: 750; }
+    .state.muted { color: #6b7280; font-weight: 700; }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #1faa59;
+      box-shadow: 0 0 0 3px rgba(31, 170, 89, 0.18);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(1.35); opacity: 0.55; }
+    }
+  `]
 })
 export class ProductDetailComponent implements OnInit {
   product: Product | null = null;

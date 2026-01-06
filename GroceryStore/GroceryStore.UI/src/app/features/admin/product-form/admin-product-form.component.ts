@@ -48,7 +48,8 @@ function nonNegDecimal2(c: AbstractControl): ValidationErrors | null {
 @Component({
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, NgIf],
-  templateUrl: './admin-product-form.component.html'
+  templateUrl: './admin-product-form.component.html',
+  styleUrl: './admin-product-form.component.css'
 })
 export class AdminProductFormComponent implements OnInit {
 
